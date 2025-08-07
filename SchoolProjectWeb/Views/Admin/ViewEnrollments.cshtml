@@ -1,0 +1,48 @@
+﻿@model List<EnrollmentViewModel>
+
+@{
+    ViewData["Title"] = "Inscripciones del Usuario";
+    var userId = ViewBag.UserId;
+    var userName = ViewBag.UserName as string ?? "";
+}
+
+<h2 class="main-title text-center mb-4">Inscripciones de @userName (ID: @userId)</h2>
+
+
+
+@if (Model == null || !Model.Any())
+{
+    <h2 class=" text-center mb-4" style="color:red;">Este usuario no tiene inscripciones.</h2>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead style="background-color: #0C4251; color: white;">
+                <tr>
+                    <th>ID del Curso</th>
+                    <th>Nombre del Curso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var enrollment in Model)
+                {
+                    <tr>
+                        <td>@enrollment.CourseID</td>
+                        <td>@enrollment.CourseName</td>
+                        <td>
+                            <form asp-action="DeleteEnrollment" method="post" asp-controller="Admin"
+                                  onsubmit="return confirm('¿Estás seguro que deseas eliminar esta inscripción?');"
+                                  style="display:inline;">
+                                <input type="hidden" name="enrollmentId" value="@enrollment.EnrollmentID" />
+                                <input type="hidden" name="userId" value="@userId" />
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar inscripción</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

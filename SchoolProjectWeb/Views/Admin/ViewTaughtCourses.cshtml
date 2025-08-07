@@ -1,0 +1,57 @@
+﻿@model List<SchoolProjectWeb.Models.TaughtCourseViewModel>
+
+@{
+    ViewData["Title"] = "Cursos Enseñados";
+    var teacherName = ViewBag.TeacherName as string ?? null;
+    var teacherId = ViewBag.TeacherID;
+}
+
+<h2 class="main-title text-center mb-4">Cursos enseñados por @teacherName (ID: @teacherId)</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Este profesor no tiene cursos asignados actualmente.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead style="background-color: #0C4251; color: white;">
+                <tr>
+                    <th>ID del Curso</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Día</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var course in Model)
+                {
+                    <tr>
+                        <td>@course.CourseID</td>
+                        <td>@course.Name</td>
+                        <td>@course.Description</td>
+                        <td>
+                            @{
+                                string day = course.DayOfWeek switch
+                                {
+                                    1 => "Lunes",
+                                    2 => "Martes",
+                                    3 => "Miércoles",
+                                    4 => "Jueves",
+                                    5 => "Viernes",
+                                    6 => "Sábado",
+                                    0 => "Domingo",
+                                    _ => "Desconocido"
+                                };
+                                @day
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<a asp-action="ListUsers" class="btn btn-secondary btn-sm mt-3">Volver a la lista de usuarios</a>

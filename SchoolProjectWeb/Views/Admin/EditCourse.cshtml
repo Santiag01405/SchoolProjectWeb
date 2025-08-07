@@ -1,0 +1,68 @@
+﻿@model SchoolProjectWeb.Models.CourseViewModel
+
+@{
+    ViewData["Title"] = "Editar Curso";
+}
+
+<h2 class="main-title text-center mb-4">@ViewData["Title"]</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+}
+
+<form asp-action="EditCourse" method="post" class="card shadow-sm p-4 border-0">
+    <input type="hidden" asp-for="CourseID" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label fw-bold">Nombre del Curso</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label fw-bold">Descripción</label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DayOfWeek" class="form-label fw-bold    ">Día de la Semana</label>
+        <select asp-for="DayOfWeek" class="form-select">
+            <option value="">Seleccione un día</option>
+            <option value="0">Domingo</option>
+            <option value="1">Lunes</option>
+            <option value="2">Martes</option>
+            <option value="3">Miércoles</option>
+            <option value="4">Jueves</option>
+            <option value="5">Viernes</option>
+            <option value="6">Sábado</option>
+        </select>
+        <span asp-validation-for="DayOfWeek" class="text-danger"></span>
+    </div>
+
+
+    <!--<div class="mb-3">
+        <label asp-for="DayOfWeek" class="form-label">Día de la Semana (0=Domingo, 6=Sábado)</label>
+        <input asp-for="DayOfWeek" type="number" min="0" max="6" class="form-control" />
+        <span asp-validation-for="DayOfWeek" class="text-danger"></span>
+    </div>-->
+
+    <div class="mb-3">
+        <label asp-for="UserID" class="form-label fw-bold">Profesor</label>
+        <select asp-for="UserID" class="form-select" asp-items="@(new SelectList(Model.Teachers, "UserID", "UserName"))">
+            <option value="">Seleccione un profesor</option>
+        </select>
+        <span asp-validation-for="UserID" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-hardblue">Guardar Cambios</button>
+   <!-- <a asp-action="ListCourses" class="btn btn-secondary ms-2">Cancelar</a>-->
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

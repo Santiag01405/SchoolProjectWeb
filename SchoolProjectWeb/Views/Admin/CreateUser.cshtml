@@ -1,0 +1,69 @@
+﻿@model SchoolProjectWeb.Models.UserRegisterViewModel
+@{
+    ViewData["Title"] = "Crear Usuario";
+}
+
+<h2 class="main-title text-center mb-4">Registro de Usuario</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" role="alert">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+}
+
+<form asp-action="CreateUser" method="post" class="card shadow-sm p-4 border-0 form-expand-check">
+    <div class="mb-3">
+        <label asp-for="UserName" class="form-label fw-bold" placeholder=" ">Nombre:</label>
+        <input asp-for="UserName" class="form-control" />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label fw-bold" placeholder=" ">Email:</label>
+        <input asp-for="Email" type="email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label fw-bold" placeholder=" ">Contraseña:</label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RoleID" class="form-label fw-bold">Rol:</label>
+        <select asp-for="RoleID" class="form-select" asp-items="@(new SelectList(Model.Roles, "Id", "Name"))"></select>
+        <span asp-validation-for="RoleID" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-hardblue ">Registrar</button>
+</form>
+<script>
+       document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector(".form-expand-check");
+        // inputs visibles excepto email, password, y los ocultos
+        const inputs = form.querySelectorAll("input:not([type=hidden]):not([type=email]):not([type=password]), textarea");
+
+        function checkInputs() {
+            let hasContent = false;
+            inputs.forEach(input => {
+                console.log(`Input ${input.name || input.id}: "${input.value}"`); // debug
+                if (input.value.trim() !== "") {
+                    hasContent = true;
+                }
+            });
+            console.log("Has content:", hasContent);
+            form.classList.toggle("expanded", hasContent);
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener("input", checkInputs);
+            input.addEventListener("change", checkInputs);
+        });
+
+        checkInputs();
+    });
+</script>

@@ -1,0 +1,38 @@
+﻿@model SchoolProjectWeb.Models.EditUserViewModel
+
+<h2 class="main-title text-center mb-4">Editar Usuario</h2>
+
+<form asp-action="EditUser" method="post" class="card shadow-sm p-4 border-0">
+    <input type="hidden" asp-for="UserID" />
+
+    <div class="mb-3">
+        <label asp-for="UserName" class="form-label fw-bold">Nombre</label>
+        <input asp-for="UserName" class="form-control" />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label fw-bold">Email</label>
+        <input asp-for="Email" class="form-control" type="email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label fw-bold">Contraseña (opcional)</label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RoleID" class="form-label fw-bold">Rol</label>
+        <select asp-for="RoleID" class="form-select">
+            <option value="1">Estudiante</option>
+            <option value="2">Profesor</option>
+            <option value="3">Padre</option>
+        </select>
+        <span asp-validation-for="RoleID" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-hardblue">Guardar</button>
+    <!--<a asp-action="ListUsers" class="btn btn-secondary ms-1">Cancelar</a>-->
+</form>

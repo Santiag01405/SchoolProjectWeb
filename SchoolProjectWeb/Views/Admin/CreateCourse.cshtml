@@ -1,0 +1,77 @@
+﻿@model SchoolProjectWeb.Models.CourseViewModel
+
+@{
+    ViewData["Title"] = "Crear Curso";
+}
+
+<h2 class="main-title text-center mb-4">Crear Curso</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="CreateCourse" method="post" class="card shadow-sm p-4 border-0 form-expand-check">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label fw-bold">Nombre del Curso:</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label fw-bold">Descripción:</label>
+        <input asp-for="Description" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DayOfWeek" class="form-label fw-bold">Día de la semana:</label>
+        <select asp-for="DayOfWeek" class="form-select">
+            <option value="">-- Seleccione un día --</option>
+            <option value="1">Lunes</option>
+            <option value="2">Martes</option>
+            <option value="3">Miércoles</option>
+            <option value="4">Jueves</option>
+            <option value="5">Viernes</option>
+            <option value="6">Sábado</option>
+            <option value="0">Domingo</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="UserID" class="form-label fw-bold">Profesor:</label>
+        <select asp-for="UserID" class="form-select" asp-items="@(new SelectList(Model.Teachers, "UserID", "UserName"))">
+            <option value="">Seleccione un profesor</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-hardblue ">Crear</button>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector(".form-expand-check");
+        // Solo inputs y textareas visibles, ignorando selects y ocultos
+        const inputs = form.querySelectorAll("input:not([type=hidden]), textarea");
+
+        function checkInputs() {
+            let hasContent = false;
+            inputs.forEach(input => {
+                if (input.value.trim() !== "") {
+                    hasContent = true;
+                }
+            });
+
+            form.classList.toggle("expanded", hasContent);
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener("input", checkInputs);
+            input.addEventListener("change", checkInputs);
+        });
+
+        checkInputs();
+    });
+</script>

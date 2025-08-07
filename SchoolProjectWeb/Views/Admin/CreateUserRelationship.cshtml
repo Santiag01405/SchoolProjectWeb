@@ -1,0 +1,38 @@
+﻿@model SchoolProjectWeb.Models.UserRelationshipViewModel
+
+@{
+    ViewData["Title"] = "Crear Relación Padre-Hijo";
+}
+
+<h2 class="main-title text-center mb-4">Crear Relación Padre-Hijo</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" role="alert">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+}
+
+<div class="form-box card-zoom4">
+    <form asp-action="CreateUserRelationship" method="post">
+        <div class="mb-3">
+            <label asp-for="User1ID" class="form-label fw-bold">Padre:</label>
+            <select asp-for="User1ID" class="form-select" asp-items="@(new SelectList(Model.Parents, "UserID", "UserName"))">
+                <option value="">Seleccione un padre</option>
+            </select>
+            <span asp-validation-for="User1ID" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="User2ID" class="form-label fw-bold">Hijo (Estudiante):</label>
+            <select asp-for="User2ID" class="form-select" asp-items="@(new SelectList(Model.Children, "UserID", "UserName"))">
+                <option value="">Seleccione un estudiante</option>
+            </select>
+            <span asp-validation-for="User2ID" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-hardblue">Crear Relación</button>
+    </form>
+</div>

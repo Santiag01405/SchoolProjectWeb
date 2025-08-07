@@ -1,0 +1,35 @@
+﻿@model List<SchoolProjectWeb.Models.StudentViewModel>
+
+@{
+    ViewData["Title"] = "Estudiantes Inscritos";
+}
+
+<h2 class="main-title text-center mb-4">Estudiantes inscritos en el curso @ViewBag.CourseName (ID: @ViewBag.CourseID)</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No hay estudiantes inscritos en este curso.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead style="background-color: #0C4251; color: white;">
+                <tr>
+                    <th>ID del Estudiante</th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <td>@student.UserID</td>
+                        <td>@student.StudentName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+<a asp-action="ListCourses" class="btn btn-secondary btn-sm mt-3">Volver a la lista de cursos</a>

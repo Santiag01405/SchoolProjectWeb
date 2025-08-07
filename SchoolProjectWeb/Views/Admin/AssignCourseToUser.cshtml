@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Asignar curso a usuario";
+    var courses = ViewBag.Courses as List<CourseViewModel>;
+    var userId = (int)ViewBag.UserID;
+}
+
+<h2 class="main-title text-center mb-4">Asignar curso al usuario @ViewBag.UserName (ID: @userId)</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">@TempData["ErrorMessage"]</div>
+}
+
+<form asp-action="AssignCourseToUser" method="post" class="card shadow-sm p-4 border-0">
+    <input type="hidden" name="userId" value="@userId" />
+
+    <div class="mb-3">
+        <label for="courseId" class="form-label">Curso:</label>
+        <select name="courseId" class="form-select" required>
+            <option value="">Seleccione un curso</option>
+            @foreach (var course in courses)
+            {
+                <option value="@course.CourseID">@course.Name</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary-custom">Inscribir</button>
+    <!--<a asp-action="ListStudents" class="btn btn-secondary ms-2">Cancelar</a>-->
+</form>

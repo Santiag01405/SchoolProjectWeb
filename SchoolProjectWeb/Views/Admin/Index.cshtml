@@ -1,0 +1,120 @@
+﻿@model SchoolProjectWeb.Models.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Panel Admin - SchoolApp";
+}
+
+<!-- Banner Superior (Stats en Tiempo Real) -->
+<div class="container-fluid py-3" style="background-color: #0C4251;">
+    <div class="container">
+        <div class="row text-center text-white">
+            <div class="col-md-3">
+                <h4 class="fw-light" style="color: #6bbdda;">Usuarios Totales</h4>
+                <h2 style="color: #f1c864;">@Model.TotalUsers</h2>
+            </div>
+            <div class="col-md-2">
+                <h4 class="fw-light" style="color: #6bbdda;">Estudiantes</h4>
+                <h2 style="color: #f1c864;">@Model.Students</h2>
+            </div>
+            <div class="col-md-2">
+                <h4 class="fw-light" style="color: #6bbdda;">Profesores</h4>
+                <h2 style="color: #f1c864;">@Model.Teachers</h2>
+            </div>
+            <div class="col-md-2">
+                <h4 class="fw-light" style="color: #6bbdda;">Padres</h4>
+                <h2 style="color: #f1c864;">@Model.Parents</h2>
+            </div>
+            <div class="col-md-3">
+                <h4 class="fw-light" style="color: #6bbdda;">Cursos Activos</h4>
+                <h2 style="color: #f1c864;">@Model.Courses</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resto de tu vista (sección principal y tarjetas) -->
+<div class="container my-5">
+    <!-- Titulo + Logo App -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h1 style="color: #0C4251; font-weight: 700;">
+                Panel de Control <span style="color: #f1c864;">SchoolApp</span>
+            </h1>
+            <p class="lead" style="color: #6bbdda;">Administra los contenidos y usuarios de la aplicación móvil</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <img src="~/lib/Resources/Images/artboard.png" alt="Logo SchoolApp" style="max-height: 100px; width: auto;">
+        </div>
+    </div>
+
+    <!-- Tarjetas de Gestión -->
+    <div class="row g-4">
+        <!-- Gestión de Usuarios -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-zoom" style="border-left: 5px solid #f1c864 !important;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 style="color: #0C4251;"><i class="bi bi-people-fill me-2"></i>Usuarios</h5>
+                        <span class="badge" style="background-color: #6bbdda;">@Model.TotalUsers registrados</span>
+                    </div>
+                    <p>Gestiona estudiantes, profesores y padres de familia.</p>
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a asp-controller="Admin" asp-action="ListUsers" class="btn btn-sm me-md-2 btn-hardblue card-zoom">
+                            Ver Todos
+                        </a>
+                        <a asp-controller="Admin" asp-action="CreateUser" class="btn btn-sm btn-yellow card-zoom">
+                            Nuevo Usuario
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gestión de Cursos -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-zoom" style="border-left: 5px solid #6bbdda !important;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 style="color: #0C4251;"><i class="bi bi-journal-bookmark me-2"></i>Cursos</h5>
+                        <span class="badge" style="background-color: #f1c864; color: #0C4251;">@Model.Courses activos</span>
+                    </div>
+                    <p>Administra el catálogo de cursos disponibles en la app móvil.</p>
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a asp-controller="Admin" asp-action="ListCourses" class="btn btn-sm me-md-2 btn-hardblue card-zoom">
+                            Explorar
+                        </a>
+                        <a asp-controller="Admin" asp-action="CreateCourse" class="btn btn-sm btn-lightblue card-zoom">
+                            Crear Curso
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No>tificaciones Push -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-zoom" style="border-left: 5px solid #0C4251 !important;">
+                <div class="card-body">
+                    <h5 style="color: #0C4251;"><i class="bi bi-megaphone-fill me-2"></i>Notificaciones Push</h5>
+                    <p>Envía alertas directamente a la app móvil de los usuarios.</p>
+                    <a asp-controller="Admin" asp-action="SendNotification" class="btn btn-sm w-100 mt-2 btn-yellow card-zoom2">
+                        Redactar Mensaje
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inscripciones -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-zoom" style="border-left: 5px solid #6bbdda !important;">
+                <div class="card-body">
+                    <h5 style="color: #0C4251;"><i class="bi bi-graph-up me-2"></i>Inscripciones</h5>
+                    <p>Gestiona las inscripciones de los alumnos.</p>
+                    <a asp-controller="Admin" asp-action="ListStudents" class="btn btn-sm w-100 mt-2 btn-hardblue card-zoom2">
+                        Ver estudiantes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>  

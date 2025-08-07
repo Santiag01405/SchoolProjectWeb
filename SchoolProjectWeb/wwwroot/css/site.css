@@ -1,0 +1,284 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* site.css */
+
+/* Banner superior */
+.banner-stats {
+    background-color: #0C4251;
+    padding: 1rem 0;
+    color: white;
+}
+
+    .banner-stats h4 {
+        color: #6bbdda;
+        font-weight: 300;
+    }
+
+    .banner-stats h2 {
+        color: #f1c864;
+    }
+
+/* Título principal */
+.main-title {
+    color: #0C4251;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+    .main-title span {
+        color: #f1c864;
+    }
+
+.subtitle {
+    color: #6bbdda;
+    font-size: 1.25rem;
+}
+
+/* Tarjetas */
+.card-custom {
+    border-left: 5px solid;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 0.075);
+}
+
+.card-users {
+    border-color: #f1c864 !important;
+}
+
+.card-courses {
+    border-color: #6bbdda !important;
+}
+
+.card-notifications {
+    border-color: #0C4251 !important;
+}
+
+.card-analytics {
+    border-color: #6bbdda !important;
+}
+
+.card-title {
+    color: #0C4251;
+}
+
+.badge-users {
+    background-color: #6bbdda;
+}
+
+.badge-courses {
+    background-color: #f1c864;
+    color: #0C4251;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 0.5rem;
+}
+
+.form-box {
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: auto;
+}
+
+/* Botones */
+.btn-primary-custom {
+    background-color: #0C4251;
+    color: white;
+    border: none;
+}
+
+    .btn-primary-custom:hover {
+        background-color: #093641;
+    }
+.btn-primary-custom {
+    background-color: #0C4251;
+    color: white;
+}
+
+.btn-secondary-custom {
+    background-color: #f1c864;
+    color: #0C4251;
+}
+
+.btn-info-custom {
+    background-color: #6bbdda;
+    color: white;
+}
+
+.btn-edit {
+    background-color: #f1c864;
+    color: #0C4251;
+}
+
+.btn-see {
+    background-color: #6bbdda;
+    color: #0C4251;
+}
+
+.btn-yellow {
+    background-color: #f1c864;
+    color: #0C4251;
+    border: none;
+}
+
+    .btn-yellow:hover {
+    background-color: #0C4251;
+    color: #f1c864;
+}
+
+.btn-hardblue {
+    background-color: #0C4251;
+    color: white;
+    border: none;
+}
+
+    .btn-hardblue:hover {
+        background-color: #6bbdda;
+        color: white;
+    }
+
+.btn-lightblue {
+    background-color: #6bbdda;
+    color: white;
+    border: none;
+}
+
+.btn-lightblue:hover {
+    background-color: #f1c864;
+    color: white;
+}
+
+/*Divisor*/
+
+.dropdown-divider {
+    background-color: #6bbdda;
+}
+
+/*Cards*/
+.card-zoom {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .card-zoom:hover {
+        transform: scale(1.06); /* Agrandar un 3% */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra más fuerte al hacer hover */
+        z-index: 2;
+    }
+
+.card-zoom2 {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .card-zoom2:hover {
+        transform: scale(1.02); /* Agrandar un 3% */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra más fuerte al hacer hover */
+        z-index: 2;
+    }
+
+.card-zoom3 {
+    transition: transform 0.3s ease;
+}
+
+    .card-zoom3:hover {
+        transform: scale(1.06); /* Agrandar un 3% */
+        z-index: 2;
+    }
+
+.card-zoom4 {
+    transition: transform 0.3s ease;
+}
+
+    .card-zoom4:hover {
+        transform: scale(1.02); /* Agrandar un 3% */
+        z-index: 2;
+    }
+
+.card-zoom5 {
+    transition: transform 0.3s ease;
+}
+
+    .card-zoom5:hover {
+        transform: scale(1.01); /* Agrandar un 3% */
+        z-index: 2;
+    }
+
+.form-expand-check {
+    transition: transform 0.3s ease-in-out;
+}
+
+    .form-expand-check.expanded {
+        transform: scale(1.02); /* o el efecto que quieras aplicar */
+    }
+
+
+
+/*Text*/
+
+a.nav-link {
+    color: #f1c864;
+    text-decoration: none;
+}
+
+    a.nav-link:hover {
+        color: #d1ac4f; /* color más oscuro o el que quieras */
+    }
+
+
+/*.nav-link.dropdown-toggle {
+    position: relative;
+    padding-right: 1.5em; 
+}
+
+    .nav-link.dropdown-toggle::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 0.75em;
+        width: 0;
+        height: 0;
+        border-left: 0.3em solid transparent;
+        border-right: 0.3em solid transparent;
+        border-top: 0.4em solid currentColor;
+        transform: translateY(-50%) rotate(0deg);
+        transition: transform 0.3s ease;
+    }
+
+.nav-item.dropdown.show > .nav-link.dropdown-toggle::after {
+    transform: translateY(-50%) rotate(180deg);
+}*/
+
+.caret-icon {
+    display: inline-block; /* necesario para que transform funcione bien */
+    transition: transform 0.3s ease;
+    margin-left: 0.3em;
+}
+
+.navbar-nav .dropdown-toggle::after {
+    display: none;
+}

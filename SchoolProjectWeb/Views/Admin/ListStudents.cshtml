@@ -1,0 +1,67 @@
+﻿@model List<SchoolProjectWeb.Models.User>
+
+@{
+    ViewData["Title"] = "Listado de Estudiantes";
+}
+
+<h2 class="main-title text-center mb-4">Estudiantes</h2>
+
+<div class="mb-4">
+    <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre..." />
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="table-responsive card-zoom4">
+    <table class="table table-bordered table-striped align-middle mb-5" id="studentsTable">
+        <thead class="table-light">
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Model)
+            {
+                <tr class="student-row" data-name="@student.UserName.ToLower()">
+                    <td>@student.UserName</td>
+                    <td>@student.Email</td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a class="btn btn-sm btn-lightblue" asp-action="ViewEnrollments" asp-route-userId="@student.UserID">Ver inscripciones</a>
+                            <a class="btn btn-sm btn-yellow" asp-action="AssignCourseToUser" asp-route-id="@student.UserID">Asignar a curso</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const studentRows = document.querySelectorAll('.student-row');
+
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+
+            studentRows.forEach(row => {
+                const name = row.getAttribute('data-name');
+                if (name.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}

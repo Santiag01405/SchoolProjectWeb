@@ -1,0 +1,33 @@
+﻿@model List<SchoolProjectWeb.Models.StudentViewModel>
+
+@{
+    ViewData["Title"] = $"Hijos de {ViewBag.ParentName}";
+}
+
+<h1>Hijos de @ViewBag.ParentName</h1>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre del Hijo</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var child in Model)
+            {
+                <tr>
+                    <td>@child.StudentName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No se encontraron hijos para este padre.</div>
+}
+
+<a asp-action="ViewChildren" class="btn btn-secondary">Volver a la vista de padres</a>

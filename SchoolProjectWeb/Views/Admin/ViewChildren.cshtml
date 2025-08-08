@@ -1,0 +1,39 @@
+﻿@model List<SchoolProjectWeb.Models.User>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Ver hijos por padre";
+}
+
+<h1>Ver hijos por padre</h1>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Selecciona un padre</h5>
+        <form asp-action="ViewChildrenOfParent" method="get">
+            <div class="form-group">
+                <label for="userId">Padre:</label>
+                <select name="userId" id="userId" class="form-control">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var parent in Model)
+                        {
+                            <option value="@parent.UserID">@parent.UserName</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="">No se encontraron padres</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Ver hijos</button>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+<div>
+    <a asp-action="CreateUserRelationship" class="btn btn-secondary">Ir a creación de relaciones</a>
+</div>

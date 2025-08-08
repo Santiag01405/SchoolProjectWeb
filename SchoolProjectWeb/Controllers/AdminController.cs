@@ -19,6 +19,7 @@ namespace SchoolProjectWeb.Controllers
 
         private int? GetSchoolIdFromSession() => HttpContext.Session.GetInt32("SchoolId");
         private string? GetTokenFromSession() => HttpContext.Session.GetString("UserToken");
+        private int? GetUserIdFromSession() => HttpContext.Session.GetInt32("UserID");
         private void SetAuthorizationHeader(string? token)
         {
             if (!string.IsNullOrEmpty(token))
@@ -27,7 +28,8 @@ namespace SchoolProjectWeb.Controllers
             }
         }
         private bool IsSessionValid() => !string.IsNullOrEmpty(GetTokenFromSession()) && GetSchoolIdFromSession().HasValue;
-
+        // Agrega este método al final de tu AdminController
+        // Asegúrate de que el nombre de la acción sea "Index" para que cargue la vista por defecto.
 
         // GET: Muestra la vista con el formulario para crear un usuario
         [HttpGet]
@@ -839,6 +841,20 @@ namespace SchoolProjectWeb.Controllers
                 viewModel.Courses = courses?.Count ?? 0;
             }
 
+            // ✅ NUEVA LÓGICA: Obtener el nombre del colegio y asignarlo al ViewModel
+            string schoolName = "Colegio Desconocido";
+            if (schoolId.HasValue)
+            {
+                var schoolResponse = await _httpClient.GetAsync($"api/schools/{schoolId}");
+                if (schoolResponse.IsSuccessStatusCode)
+                {
+                    var schoolJson = await schoolResponse.Content.ReadAsStringAsync();
+                    var school = JsonSerializer.Deserialize<SchoolViewModel>(schoolJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    schoolName = school?.Name ?? "Colegio Desconocido";
+                }
+            }
+            viewModel.SchoolName = schoolName;
+
             return View("Index", viewModel);
         }
 
@@ -1033,6 +1049,7 @@ namespace SchoolProjectWeb.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> AssignStudentToClassroom(AssignStudentToClassroomViewModel model)
         {
@@ -1074,5 +1091,113 @@ namespace SchoolProjectWeb.Controllers
             return RedirectToAction("AssignStudentToClassroom");
         }
 
+        // 🔹 GET: Muestra los estudiantes en un salón
+        [HttpGet]
+        public async Task<IActionResult> ViewStudentsInClassroom(int classroomId)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+
+            // Llamada para obtener la lista de estudiantes
+            var response = await _httpClient.GetAsync($"api/classrooms/{classroomId}/students");
+
+            List<User> students = new List<User>();
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                students = JsonSerializer.Deserialize<List<User>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<User>();
+            }
+            // No se redirige si no hay estudiantes. La lista estará vacía, lo que la vista detectará.
+
+            // Llamada para obtener el nombre del salón
+            var classroomResponse = await _httpClient.GetAsync($"api/classrooms/{classroomId}?schoolId={GetSchoolIdFromSession()}");
+
+            string classroomName = "Salón Desconocido";
+            if (classroomResponse.IsSuccessStatusCode)
+            {
+                var classroomJson = await classroomResponse.Content.ReadAsStringAsync();
+                var classroom = JsonSerializer.Deserialize<ClassroomViewModel>(classroomJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                classroomName = classroom?.Name ?? classroomName;
+            }
+
+            ViewBag.ClassroomName = classroomName;
+
+            return View(students);
+        }
+
+        //************************    EVALUACIONES    ***************************************
+
+        [HttpGet]
+        public async Task<IActionResult> ListEvaluations()
+        {
+            var token = GetTokenFromSession();
+            var schoolId = GetSchoolIdFromSession();
+            var userId = GetUserIdFromSession();
+
+            if (string.IsNullOrEmpty(token) || !schoolId.HasValue || !userId.HasValue)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            SetAuthorizationHeader(token);
+            var response = await _httpClient.GetAsync($"api/evaluations?userID={userId.Value}&schoolId={schoolId.Value}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var evaluations = JsonSerializer.Deserialize<List<Evaluation>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return View(evaluations);
+            }
+            else
+            {
+                return View(new List<Evaluation>());
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CreateEvaluation()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateEvaluation(EvaluationViewModel model)
+        {
+            var token = GetTokenFromSession();
+            var schoolId = GetSchoolIdFromSession();
+            var userId = GetUserIdFromSession();
+
+            if (!ModelState.IsValid || string.IsNullOrEmpty(token) || !schoolId.HasValue || !userId.HasValue)
+            {
+                return View(model);
+            }
+
+            var newEvaluation = new Evaluation
+            {
+                Title = model.Title,
+                Description = model.Description,
+                Date = model.Date,
+                CourseID = model.CourseID,
+                UserID = userId.Value,
+                SchoolID = schoolId.Value
+            };
+
+            var json = JsonSerializer.Serialize(newEvaluation);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            SetAuthorizationHeader(token);
+            var response = await _httpClient.PostAsync("api/evaluations", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("ListEvaluations");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error al crear la evaluación.");
+                return View(model);
+            }
+        }
     }
 }

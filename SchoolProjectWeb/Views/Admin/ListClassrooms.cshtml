@@ -30,6 +30,7 @@
                     <td>@item.Description</td>
                     <td>
                         <a asp-action="EditClassroom" asp-route-id="@item.ClassroomID" class="btn btn-warning btn-sm">Editar</a> |
+                        <a asp-action="ViewStudentsInClassroom" asp-route-classroomId="@item.ClassroomID" class="btn btn-info btn-sm">Ver estudiantes</a> |
                         <form asp-action="DeleteClassroom" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este salón?');">
                             <input type="hidden" name="id" value="@item.ClassroomID" />
                             <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>

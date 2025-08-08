@@ -7,5 +7,6 @@
         public int Teachers { get; set; }
         public int Parents { get; set; }
         public int Courses { get; set; }
+        public string SchoolName { get; set; }
     }
 }

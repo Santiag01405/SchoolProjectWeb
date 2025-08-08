@@ -15,6 +15,16 @@ public class LoginController : Controller
         _httpClient.BaseAddress = new Uri("https://SchoolProject123.somee.com/");
     }
 
+    // Añade este método a tu LoginController.cs
+    [HttpGet]
+    public IActionResult Logout()
+    {
+        // Limpia todos los datos de la sesión
+        HttpContext.Session.Clear();
+        // Redirige al usuario a la vista de login
+        return RedirectToAction("Login", "Login");
+    }
+
     [HttpGet]
     public IActionResult Login()
     {
@@ -79,6 +89,7 @@ public class LoginController : Controller
                     HttpContext.Session.SetInt32("SchoolId", userDetails.SchoolID.Value);
                     HttpContext.Session.SetInt32("UserID", userDetails.UserID);
                     HttpContext.Session.SetString("UserName", userDetails.UserName);
+                    HttpContext.Session.SetString("email", userDetails.Email);
                     HttpContext.Session.SetString("UserToken", authResponse.Token);
 
                     return RedirectToAction("Index", "Admin");
@@ -100,5 +111,7 @@ public class LoginController : Controller
             ModelState.AddModelError("", "Credenciales inválidas.");
             return View(model);
         }
+
+
     }
 }

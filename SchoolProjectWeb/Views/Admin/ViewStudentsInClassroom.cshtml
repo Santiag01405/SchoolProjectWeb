@@ -1,0 +1,36 @@
+﻿@model List<SchoolProjectWeb.Models.User>
+
+@{
+    ViewData["Title"] = $"Estudiantes en {ViewBag.ClassroomName}";
+}
+
+<h1>Estudiantes en el salón: @ViewBag.ClassroomName</h1>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo Electrónico</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Model)
+            {
+                <tr>
+                    <td>@student.UserID</td>
+                    <td>@student.UserName</td>
+                    <td>@student.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No se encontraron estudiantes en este salón.</div>
+}
+
+<a asp-action="ListClassrooms" class="btn btn-secondary">Volver a la lista de salones</a>

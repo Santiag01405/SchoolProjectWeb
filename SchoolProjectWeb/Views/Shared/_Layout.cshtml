@@ -31,7 +31,7 @@
                             <li class="nav-item me-3">
                                 <span class="nav-link text-light">
                                     <i class="fa-solid fa-user-circle me-1"></i>
-                                    administrador@gmail.com
+                                    @Context.Session.GetString("email")
                                 </span>
                             </li>
 
@@ -58,6 +58,8 @@
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListClassrooms">Ver salones</a></li>
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="AssignStudentToClassroom">Asignar alumno a salon</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Login" asp-action="Logout">Cerrar sesión</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -73,7 +75,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - SchoolProjectWeb - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - SchoolApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

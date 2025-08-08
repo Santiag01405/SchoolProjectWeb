@@ -1,0 +1,43 @@
+﻿@model List<SchoolProjectWeb.Models.Evaluation>
+
+@{
+    ViewData["Title"] = "Evaluaciones";
+}
+
+<h1>Evaluaciones</h1>
+
+<p>
+    <a asp-action="CreateEvaluation">Crear Nueva Evaluación</a>
+</p>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var evaluation in Model)
+            {
+                <tr>
+                    <td>@evaluation.Title</td>
+                    <td>@evaluation.Description</td>
+                    <td>@evaluation.Date.ToShortDateString()</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@evaluation.EvaluationID">Editar</a> |
+                        <a asp-action="Delete" asp-route-id="@evaluation.EvaluationID">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No se encontraron evaluaciones.</p>
+}

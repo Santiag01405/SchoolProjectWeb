@@ -1,0 +1,50 @@
+﻿@model List<SchoolProjectWeb.Models.GradeViewModel>
+
+@{
+    ViewData["Title"] = "Asignar Calificaciones";
+    int evaluationId = ViewBag.EvaluationId;
+}
+
+<h1>Asignar Calificaciones</h1>
+<hr />
+
+<form asp-action="AssignGrades" method="post">
+    <input type="hidden" name="evaluationId" value="@evaluationId" />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Estudiante</th>
+                <th>Calificación</th>
+                <th>Comentarios</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Model[i].UserName
+                        <input type="hidden" asp-for="@Model[i].UserID" />
+                        <input type="hidden" asp-for="@Model[i].EvaluationID" />
+                    </td>
+                    <td>
+                        <input asp-for="@Model[i].GradeValue" type="number" step="0.1" class="form-control" />
+                    </td>
+                    <td>
+                        <input asp-for="@Model[i].Comments" class="form-control" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Guardar Calificaciones</button>
+        <a asp-action="ListEvaluations" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -14,6 +14,9 @@ namespace SchoolProjectWeb.Models
         public DateTime Date { get; set; }
 
         [Required(ErrorMessage = "Debe seleccionar un curso.")]
+        [Display(Name = "Curso")]
         public int CourseID { get; set; }
+
+        public int EvaluationID { get; set; }
     }
 }

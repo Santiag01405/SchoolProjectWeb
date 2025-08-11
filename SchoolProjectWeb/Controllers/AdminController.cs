@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SchoolProjectWeb.Controllers
 {
@@ -648,7 +649,97 @@ namespace SchoolProjectWeb.Controllers
             ViewBag.UserId = userId;
             return View(enrollments);
         }
+        // AdminController.cs (agrega estas acciones)
+        [HttpGet]
+        public async Task<IActionResult> AssignClassroom()
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
 
+            var token = GetTokenFromSession();
+            var schoolId = GetSchoolIdFromSession();
+            var userId = GetUserIdFromSession();
+
+            SetAuthorizationHeader(token);
+
+            // Obtener la lista de cursos del profesor
+            var coursesResponse = await _httpClient.GetAsync($"api/courses/user/{userId.Value}/taught-courses?schoolId={schoolId.Value}");
+            var courses = new List<Course>();
+            if (coursesResponse.IsSuccessStatusCode)
+            {
+                var coursesJson = await coursesResponse.Content.ReadAsStringAsync();
+                courses = JsonSerializer.Deserialize<List<Course>>(coursesJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Course>();
+            }
+            ViewBag.Courses = new SelectList(courses, "CourseID", "Name");
+
+            // Obtener la lista de salones
+            var classroomsResponse = await _httpClient.GetAsync($"api/classrooms?schoolId={schoolId.Value}");
+            var classrooms = new List<ClassroomViewModel>();
+            if (classroomsResponse.IsSuccessStatusCode)
+            {
+                var classroomsJson = await classroomsResponse.Content.ReadAsStringAsync();
+                classrooms = JsonSerializer.Deserialize<List<ClassroomViewModel>>(classroomsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<ClassroomViewModel>();
+            }
+            ViewBag.Classrooms = new SelectList(classrooms, "ClassroomID", "Name");
+
+            return View();
+        }
+        // AdminController.cs
+        [HttpPost]
+        public async Task<IActionResult> AssignClassroom(AssignClassroomViewModel model)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            var token = GetTokenFromSession();
+            var schoolId = GetSchoolIdFromSession();
+            var userId = GetUserIdFromSession();
+
+            async Task LoadDropdowns()
+            {
+                SetAuthorizationHeader(token);
+
+                var coursesResponse = await _httpClient.GetAsync($"api/courses/user/{userId.Value}/taught-courses?schoolId={schoolId.Value}");
+                var courses = new List<Course>();
+                if (coursesResponse.IsSuccessStatusCode)
+                {
+                    var coursesJson = await coursesResponse.Content.ReadAsStringAsync();
+                    courses = JsonSerializer.Deserialize<List<Course>>(coursesJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Course>();
+                }
+                ViewBag.Courses = new SelectList(courses, "CourseID", "Name");
+
+                var classroomsResponse = await _httpClient.GetAsync($"api/classrooms?schoolId={schoolId.Value}");
+                var classrooms = new List<ClassroomViewModel>();
+                if (classroomsResponse.IsSuccessStatusCode)
+                {
+                    var classroomsJson = await classroomsResponse.Content.ReadAsStringAsync();
+                    classrooms = JsonSerializer.Deserialize<List<ClassroomViewModel>>(classroomsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<ClassroomViewModel>();
+                }
+                ViewBag.Classrooms = new SelectList(classrooms, "ClassroomID", "Name");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await LoadDropdowns();
+                return View(model);
+            }
+
+            var apiUrl = $"api/courses/{model.CourseID}/assign-classroom/{model.ClassroomID}";
+
+            SetAuthorizationHeader(token);
+            // 🚨 CORRECCIÓN: Usar PutAsync en lugar de PostAsync
+            var response = await _httpClient.PutAsync(apiUrl, null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Curso asignado al salón correctamente.";
+                return RedirectToAction("ListCourses");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error al asignar el curso al salón. Intente nuevamente.");
+                await LoadDropdowns();
+                return View(model);
+            }
+        }
         public async Task<IActionResult> AssignCourseToUser(int id)
         {
             if (!IsSessionValid()) return RedirectToAction("Login", "Login");
@@ -1156,8 +1247,28 @@ namespace SchoolProjectWeb.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateEvaluation()
+        public async Task<IActionResult> CreateEvaluation()
         {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+            var userId = GetUserIdFromSession();
+
+            var coursesResponse = await _httpClient.GetAsync($"api/courses/user/{userId.Value}/taught-courses?schoolId={schoolId.Value}");
+            var courses = new List<Course>();
+
+            if (coursesResponse.IsSuccessStatusCode)
+            {
+                var coursesJson = await coursesResponse.Content.ReadAsStringAsync();
+                courses = JsonSerializer.Deserialize<List<Course>>(coursesJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Course>();
+            }
+            else
+            {
+                TempData["Error"] = "No se encontraron cursos asignados a su cuenta.";
+            }
+
+            ViewBag.Courses = new SelectList(courses, "CourseID", "Name");
             return View();
         }
 
@@ -1168,8 +1279,19 @@ namespace SchoolProjectWeb.Controllers
             var schoolId = GetSchoolIdFromSession();
             var userId = GetUserIdFromSession();
 
-            if (!ModelState.IsValid || string.IsNullOrEmpty(token) || !schoolId.HasValue || !userId.HasValue)
+            // 🚨 Importante: Recargar los cursos si el modelo no es válido
+            if (!ModelState.IsValid)
             {
+                SetAuthorizationHeader(token);
+                var coursesResponse = await _httpClient.GetAsync($"api/courses/user/{userId.Value}/taught-courses?schoolId={schoolId.Value}");
+                var courses = new List<Course>();
+
+                if (coursesResponse.IsSuccessStatusCode)
+                {
+                    var coursesJson = await coursesResponse.Content.ReadAsStringAsync();
+                    courses = JsonSerializer.Deserialize<List<Course>>(coursesJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Course>();
+                }
+                ViewBag.Courses = new SelectList(courses, "CourseID", "Name");
                 return View(model);
             }
 
@@ -1191,13 +1313,224 @@ namespace SchoolProjectWeb.Controllers
 
             if (response.IsSuccessStatusCode)
             {
+                TempData["Success"] = "Evaluación creada correctamente.";
                 return RedirectToAction("ListEvaluations");
             }
             else
             {
-                ModelState.AddModelError("", "Error al crear la evaluación.");
+                // En caso de fallo de la API, también recargamos la lista
+                ModelState.AddModelError("", "Error al crear la evaluación. Intente nuevamente.");
+                SetAuthorizationHeader(token);
+                var coursesResponse = await _httpClient.GetAsync($"api/courses/user/{userId.Value}/taught-courses?schoolId={schoolId.Value}");
+                var courses = new List<Course>();
+
+                if (coursesResponse.IsSuccessStatusCode)
+                {
+                    var coursesJson = await coursesResponse.Content.ReadAsStringAsync();
+                    courses = JsonSerializer.Deserialize<List<Course>>(coursesJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Course>();
+                }
+                ViewBag.Courses = new SelectList(courses, "CourseID", "Name");
                 return View(model);
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditEvaluation(int id)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+            var userId = GetUserIdFromSession();
+
+            var response = await _httpClient.GetAsync($"api/evaluations/{id}?schoolId={schoolId.Value}");
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Error al cargar la evaluación.";
+                return RedirectToAction("ListEvaluations");
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var evaluation = JsonSerializer.Deserialize<EvaluationViewModel>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (evaluation == null)
+            {
+                TempData["Error"] = "Evaluación no encontrada.";
+                return RedirectToAction("ListEvaluations");
+            }
+
+            var coursesResponse = await _httpClient.GetAsync($"api/courses/user/{userId.Value}/taught-courses?schoolId={schoolId.Value}");
+            if (coursesResponse.IsSuccessStatusCode)
+            {
+                var coursesJson = await coursesResponse.Content.ReadAsStringAsync();
+                // Agrega el operador de fusión nula para garantizar que no sea null
+                var courses = JsonSerializer.Deserialize<List<Course>>(coursesJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Course>();
+                ViewBag.Courses = courses;
+            }
+            else
+            {
+                ViewBag.Courses = new List<Course>();
+            }
+
+            return View(evaluation);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditEvaluation(EvaluationViewModel model)
+        {
+            if (!IsSessionValid() || !ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+            var userId = GetUserIdFromSession();
+
+            var updatedEvaluation = new Evaluation
+            {
+                EvaluationID = model.EvaluationID,
+                Title = model.Title,
+                Description = model.Description,
+                Date = model.Date,
+                CourseID = model.CourseID,
+                UserID = userId.Value, // Asegurarse de que el UserID es del usuario actual
+                SchoolID = schoolId.Value
+            };
+
+            var json = JsonSerializer.Serialize(updatedEvaluation);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"api/evaluations/{model.EvaluationID}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Evaluación actualizada correctamente.";
+                return RedirectToAction("ListEvaluations");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error al actualizar la evaluación.");
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteEvaluation(int id)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+            var response = await _httpClient.DeleteAsync($"api/evaluations/{id}?schoolId={schoolId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Evaluación eliminada correctamente.";
+            }
+            else
+            {
+                TempData["Error"] = "Error al eliminar la evaluación.";
+            }
+
+            return RedirectToAction("ListEvaluations");
+        }
+
+        // ----------------------------------------------------------------------
+        // ACCIONES PARA ASIGNAR CALIFICACIONES
+        // ----------------------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> AssignGrades(int evaluationId)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+            var userId = GetUserIdFromSession();
+
+            // 1. Obtener los estudiantes del curso a través de la evaluación
+            var studentsResponse = await _httpClient.GetAsync($"api/grades/evaluation/{evaluationId}/students");
+            if (!studentsResponse.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "No se encontraron estudiantes para esta evaluación.";
+                return RedirectToAction("ListEvaluations");
+            }
+            var studentsJson = await studentsResponse.Content.ReadAsStringAsync();
+            var students = JsonSerializer.Deserialize<List<User>>(studentsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<User>();
+
+            // 2. Obtener las calificaciones existentes para esta evaluación
+            // Este endpoint no existe en los que proporcionaste, asumiré que tienes uno o haré una llamada general
+            // Aquí hago una suposición de que el endpoint devuelve todas las notas. Lo ideal sería un endpoint más específico.
+            var allGradesResponse = await _httpClient.GetAsync($"api/grades?schoolId={schoolId.Value}");
+            var allGrades = new List<GradeViewModel>();
+            if (allGradesResponse.IsSuccessStatusCode)
+            {
+                var gradesJson = await allGradesResponse.Content.ReadAsStringAsync();
+                allGrades = JsonSerializer.Deserialize<List<GradeViewModel>>(gradesJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<GradeViewModel>();
+            }
+
+            // 3. Mapear los estudiantes y sus notas existentes al ViewModel
+            var model = new List<GradeViewModel>();
+            foreach (var student in students)
+            {
+                var existingGrade = allGrades.FirstOrDefault(g => g.UserID == student.UserID && g.EvaluationID == evaluationId);
+                model.Add(new GradeViewModel
+                {
+                    EvaluationID = evaluationId,
+                    UserID = student.UserID,
+                    UserName = student.UserName,
+                    GradeValue = existingGrade?.GradeValue,
+                    Comments = existingGrade?.Comments,
+                    HasGrade = existingGrade != null
+                });
+            }
+
+            ViewBag.EvaluationId = evaluationId;
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignGrades(List<GradeViewModel> model)
+        {
+            if (!IsSessionValid() || !ModelState.IsValid)
+            {
+                TempData["Error"] = "Error al procesar las calificaciones.";
+                return View(model);
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+            var evaluationId = model.First().EvaluationID;
+
+            foreach (var grade in model)
+            {
+                if (grade.GradeValue.HasValue)
+                {
+                    var payload = new
+                    {
+                        UserID = grade.UserID,
+                        EvaluationID = grade.EvaluationID,
+                        GradeValue = grade.GradeValue,
+                        Comments = grade.Comments,
+                        SchoolID = schoolId.Value
+                    };
+
+                    var json = JsonSerializer.Serialize(payload);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await _httpClient.PostAsync("api/grades/assign", content);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var error = await response.Content.ReadAsStringAsync();
+                        TempData["Error"] = $"Error al asignar calificación al usuario {grade.UserName}: {error}";
+                        return RedirectToAction("ListEvaluations");
+                    }
+                }
+            }
+
+            TempData["Success"] = "Calificaciones asignadas correctamente.";
+            return RedirectToAction("ListEvaluations");
         }
     }
 }

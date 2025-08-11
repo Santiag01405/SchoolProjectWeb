@@ -39,7 +39,7 @@ body {
         color: #f1c864;
     }
 
-/* T�tulo principal */
+/* T�tulo principal */
 .main-title {
     color: #0C4251;
     font-weight: 700;
@@ -187,7 +187,7 @@ body {
 
     .card-zoom:hover {
         transform: scale(1.06); /* Agrandar un 3% */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra m�s fuerte al hacer hover */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra m�s fuerte al hacer hover */
         z-index: 2;
     }
 
@@ -197,7 +197,7 @@ body {
 
     .card-zoom2:hover {
         transform: scale(1.02); /* Agrandar un 3% */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra m�s fuerte al hacer hover */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra m�s fuerte al hacer hover */
         z-index: 2;
     }
 
@@ -246,7 +246,7 @@ a.nav-link {
 }
 
     a.nav-link:hover {
-        color: #d1ac4f; /* color m�s oscuro o el que quieras */
+        color: #d1ac4f; /* color m�s oscuro o el que quieras */
     }
 
 
@@ -281,4 +281,142 @@ a.nav-link {
 
 .navbar-nav .dropdown-toggle::after {
     display: none;
+}
+
+
+.container-fluid.py-3 {
+    border-radius: 0 0 15px 15px;
+}
+
+
+/* --- Estilos para la página de Login --- */
+
+/* 1. Estilos Base (para pantallas grandes/PC) */
+.login-page {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+.login-branding {
+    flex: 0 0 42%;
+    background-color: #0C4251;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+    .login-branding img {
+        width: 200px;
+        margin-bottom: 1.5rem;
+    }
+
+    .login-branding .main-title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5em;
+        color: white; /* <--- ¡LA LÍNEA CLAVE! */
+    }
+
+.brand-name {
+    color: #f1c864; /* Tu color amarillo/dorado */
+}
+
+.login-form {
+    flex: 1;
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    transition: all 0.3s ease-in-out;
+}
+
+/* ...el resto de tu CSS sigue igual... */
+
+.form-box {
+    width: 100%;
+    max-width: 450px;
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+
+/* 2. Media Query para Pantallas Medianas (Tablets, Laptops pequeños) */
+@media (max-width: 1199px) {
+    .login-page {
+        flex-direction: column; /* Apilamos los paneles verticalmente */
+    }
+
+    .login-branding {
+        flex: 0 0 auto;
+        /* Hacemos el panel superior más compacto */
+        padding: 1.5rem 0;
+        /* Eliminamos la altura mínima para que se ajuste al contenido */
+        min-height: auto;
+    }
+
+        /* Ocultamos los textos grandes en esta vista */
+        .login-branding .main-title,
+        .login-branding .subtitle {
+            display: none;
+        }
+
+        /* Hacemos el logo más pequeño para esta vista */
+        .login-branding img {
+            width: 120px;
+            margin-bottom: 0; /* Quitamos el margen inferior porque ya no hay texto */
+        }
+
+    .login-form {
+        flex: 1;
+        /* Eliminamos la altura mínima para que el centrado sea más natural */
+        min-height: auto;
+    }
+}
+
+
+/* 3. Media Query para Pantallas Pequeñas (Móviles) */
+@media (max-width: 767px) {
+    /* Hacemos visible el panel de la marca, pero súper compacto */
+    .login-branding {
+        display: flex; /* Lo hacemos visible de nuevo */
+        padding: 1rem 0; /* Menos padding vertical para que sea más delgado */
+        min-height: auto; /* La altura se ajusta al contenido */
+    }
+
+        /* Ocultamos los textos grandes (esta regla se hereda de la media query de tablet, pero la repetimos por claridad) */
+        .login-branding .main-title,
+        .login-branding .subtitle {
+            display: none;
+        }
+
+        /* Hacemos el logo aún más pequeño en móviles */
+        .login-branding img {
+            width: 90px;
+            margin-bottom: 0;
+        }
+
+    /* Ajustamos la posición del formulario */
+    .login-form {
+        /* Centramos el formulario en el espacio restante */
+        align-items: center;
+        padding: 2rem 1rem; /* Añadimos padding horizontal */
+    }
+
+    .form-box {
+        box-shadow: none;
+        padding: 1.5rem;
+        width: 100%; /* El formulario ocupa todo el ancho disponible */
+    }
 }

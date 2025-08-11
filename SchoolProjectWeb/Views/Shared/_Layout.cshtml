@@ -25,43 +25,74 @@
 
                 <!-- Menú -->
                 <div class="navbar-collapse collapse d-sm-inline-flex">
-                    <ul class="navbar-nav ms-auto align-items-center">
 
-                            <!-- Nombre de usuario con ícono -->
-                            <li class="nav-item me-3">
-                                <span class="nav-link text-light">
-                                    <i class="fa-solid fa-user-circle me-1"></i>
-                                    @Context.Session.GetString("email")
-                                </span>
-                            </li>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                        <!-- Dropdown Admin alineado a la derecha -->
+                        <li class="nav-item">
+                            <a class="nav-link" style="color: #f1c864;" asp-controller="Admin" asp-action="Index">Inicio</a>
+                        </li>
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
-                                Panel administrador <i class="fa fa-caret-down caret-icon"></i>
+                                Usuarios <i class="fa fa-caret-down caret-icon"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" style="background-color: #0C4251;">
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="Index">Inicio</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateUser">Crear Usuario</a></li>
+                            <ul class="dropdown-menu" style="background-color: #0C4251;">
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListUsers">Ver Usuarios</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateCourse">Crear Curso</a></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListCourses">Ver Cursos</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateUserRelationship">Crear relaciones</a></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ViewChildren">Ver relaciones</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListStudents">Alumnos Inscripciones</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="SendNotification">Notificaciones</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListClassrooms">Ver salones</a></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="AssignStudentToClassroom">Asignar alumno a salon</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Login" asp-action="Logout">Cerrar sesión</a></li>
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateUser">Crear Usuario</a></li>
                             </ul>
                         </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
+                                Cursos <i class="fa fa-caret-down caret-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu" style="background-color: #0C4251;">
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListCourses">Ver Cursos</a></li>
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateCourse">Crear Curso</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
+                                Relaciones <i class="fa fa-caret-down caret-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu" style="background-color: #0C4251;">
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ViewChildren">Ver Relaciones</a></li>
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateUserRelationship">Crear Relación</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
+                                Salones <i class="fa fa-caret-down caret-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu" style="background-color: #0C4251;">
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListClassrooms">Ver Salones</a></li>
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="AssignStudentToClassroom">Asignar Alumno</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" style="color: #f1c864;" asp-controller="Admin" asp-action="ListStudents">Inscripciones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" style="color: #f1c864;" asp-controller="Admin" asp-action="SendNotification">Notificaciones</a>
+                        </li>
+
+                    </ul>
+                    <ul class="navbar-nav ms-auto align-items-center">
+
+                        <li class="nav-item me-3">
+                            <span class="nav-link text-light">
+                                <i class="fa-solid fa-user-circle me-1"></i>
+                                @Context.Session.GetString("email")
+                            </span>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" style="color: #6bbdda;" asp-controller="Login" asp-action="Logout">Cerrar sesión <i class="fa-solid fa-right-from-bracket"></i></a>
+                        </li>
+
                     </ul>
                 </div>
             </div>

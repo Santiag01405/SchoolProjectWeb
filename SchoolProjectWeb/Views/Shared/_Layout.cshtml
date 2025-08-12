@@ -8,30 +8,25 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SchoolProjectWeb.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head> 
+</head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark" style="background-color: #0C4251; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0C4251; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);">
             <div class="container-fluid">
-                <!-- Logo + Nombre -->
+
                 <a class="navbar-brand" asp-area="" asp-controller="Admin" asp-action="Index">
                     <img src="~/lib/Resources/Images/artboard.png" alt="SchoolProjectWeb Logo" style="height: 2rem; width: auto;">
                 </a>
 
-                <!-- Botón para móviles -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuOffcanvas" aria-controls="mobileMenuOffcanvas">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Menú -->
-                <div class="navbar-collapse collapse d-sm-inline-flex">
-
+                <div class="collapse navbar-collapse">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
                         <li class="nav-item">
                             <a class="nav-link" style="color: #f1c864;" asp-controller="Admin" asp-action="Index">Inicio</a>
                         </li>
-
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
                                 Usuarios <i class="fa fa-caret-down caret-icon"></i>
@@ -41,7 +36,6 @@
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateUser">Crear Usuario</a></li>
                             </ul>
                         </li>
-
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
                                 Cursos <i class="fa fa-caret-down caret-icon"></i>
@@ -49,7 +43,6 @@
                             <ul class="dropdown-menu" style="background-color: #0C4251;">
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListCourses">Ver Cursos</a></li>
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateCourse">Crear Curso</a></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="AssignClassroom">Asignar salon a curso</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -61,7 +54,6 @@
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateUserRelationship">Crear Relación</a></li>
                             </ul>
                         </li>
-
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
                                 Salones <i class="fa fa-caret-down caret-icon"></i>
@@ -71,43 +63,69 @@
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="AssignStudentToClassroom">Asignar Alumno</a></li>
                             </ul>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" style="color: #f1c864;" asp-controller="Admin" asp-action="ListStudents">Inscripciones</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" style="color: #f1c864;" asp-controller="Admin" asp-action="SendNotification">Notificaciones</a>
                         </li>
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
-                                Evaluaciones <i class="fa fa-caret-down caret-icon"></i>
-                            </a>
-                            <ul class="dropdown-menu" style="background-color: #0C4251;">
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListEvaluations">Ver evaluaciones</a></li>
-                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateEvaluation">Crear evaluación</a></li>
-                            </ul>
-                        </li>
-
                     </ul>
                     <ul class="navbar-nav ms-auto align-items-center">
-
                         <li class="nav-item me-3">
                             <span class="nav-link text-light">
                                 <i class="fa-solid fa-user-circle me-1"></i>
                                 @Context.Session.GetString("email")
                             </span>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" style="color: #6bbdda;" asp-controller="Login" asp-action="Logout">Cerrar sesión <i class="fa-solid fa-right-from-bracket"></i></a>
                         </li>
-
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
+    <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="mobileMenuOffcanvas" aria-labelledby="mobileMenuOffcanvasLabel">
+        <div class="offcanvas-header">
+            <div>
+                <h5 class="offcanvas-title" id="mobileMenuOffcanvasLabel">Menú</h5>
+                <span class="offcanvas-subtitle">
+                    <i class="fa-solid fa-user-circle me-1"></i>
+                    @Context.Session.GetString("email")
+                </span>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav">
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="Index">Inicio</a></li>
+                <hr class="mobile-nav-divider" />
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="ListUsers">Ver Usuarios</a></li>
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="CreateUser">Crear Usuario</a></li>
+                <hr class="mobile-nav-divider" />
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="ListCourses">Ver Cursos</a></li>
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="CreateCourse">Crear Curso</a></li>
+                <hr class="mobile-nav-divider" />
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="ViewChildren">Ver Relaciones</a></li>
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="CreateUserRelationship">Crear Relación</a></li>
+                <hr class="mobile-nav-divider" />
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="ListClassrooms">Ver Salones</a></li>
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="AssignStudentToClassroom">Asignar Alumno</a></li>
+                <hr class="mobile-nav-divider" />
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="ListStudents">Inscripciones</a></li>
+                <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="SendNotification">Notificaciones</a></li>
+                <hr class="mobile-nav-divider" />
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" style="color: #6bbdda;" asp-controller="Login" asp-action="Logout">Cerrar sesión <i class="fa-solid fa-right-from-bracket"></i></a>
+                    </li>
+                </ul>
+            </ul>
+        </div>
+    </div>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -139,5 +157,30 @@
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // Escuchamos el evento de cambio de tamaño de la ventana
+        window.addEventListener('resize', function() {
+            // El punto de quiebre 'lg' de Bootstrap es 992px.
+            // Si el ancho de la ventana es 992px o más, estamos en vista de escritorio.
+            if (window.innerWidth >= 992) {
+
+                // Buscamos nuestro menú Offcanvas por su ID
+                var myOffcanvas = document.getElementById('mobileMenuOffcanvas');
+
+                // Si existe, obtenemos la instancia del componente Offcanvas de Bootstrap
+                if (myOffcanvas) {
+                    var bsOffcanvas = bootstrap.Offcanvas.getInstance(myOffcanvas);
+
+                    // Si la instancia existe (es decir, el menú fue abierto al menos una vez),
+                    // y está visible, lo cerramos programáticamente.
+                    if (bsOffcanvas && myOffcanvas.classList.contains('show')) {
+                        bsOffcanvas.hide();
+                    }
+                }
+            }
+        });
+    </script>
+
 </body>
 </html>

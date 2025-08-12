@@ -1,24 +1,24 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 /* site.css */
@@ -39,7 +39,7 @@ body {
         color: #f1c864;
     }
 
-/* T�tulo principal */
+/* T tulo principal */
 .main-title {
     color: #0C4251;
     font-weight: 700;
@@ -116,6 +116,7 @@ body {
     .btn-primary-custom:hover {
         background-color: #093641;
     }
+
 .btn-primary-custom {
     background-color: #0C4251;
     color: white;
@@ -148,9 +149,9 @@ body {
 }
 
     .btn-yellow:hover {
-    background-color: #0C4251;
-    color: #f1c864;
-}
+        background-color: #0C4251;
+        color: #f1c864;
+    }
 
 .btn-hardblue {
     background-color: #0C4251;
@@ -169,27 +170,27 @@ body {
     border: none;
 }
 
-.btn-lightblue:hover {
-    background-color: #f1c864;
-    color: white;
-}
+    .btn-lightblue:hover {
+        background-color: #f1c864;
+        color: white;
+    }
 
-/*Divisor*/
+/Divisor/
 
 .dropdown-divider {
     background-color: #6bbdda;
 }
 
-/*Cards*/
+/Cards/
 .card-zoom {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-    .card-zoom:hover {
-        transform: scale(1.06); /* Agrandar un 3% */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra m�s fuerte al hacer hover */
-        z-index: 2;
-    }
+.card-zoom:hover {
+    transform: scale(1.06); /* Agrandar un 3% */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra m s fuerte al hacer hover */
+    z-index: 2;
+}
 
 .card-zoom2 {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -197,7 +198,7 @@ body {
 
     .card-zoom2:hover {
         transform: scale(1.02); /* Agrandar un 3% */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra m�s fuerte al hacer hover */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* sombra m s fuerte al hacer hover */
         z-index: 2;
     }
 
@@ -238,16 +239,16 @@ body {
 
 
 
-/*Text*/
+/Text/
 
 a.nav-link {
     color: #f1c864;
     text-decoration: none;
 }
 
-    a.nav-link:hover {
-        color: #d1ac4f; /* color m�s oscuro o el que quieras */
-    }
+a.nav-link:hover {
+    color: #d1ac4f; /* color m s oscuro o el que quieras */
+}
 
 
 /*.nav-link.dropdown-toggle {
@@ -286,6 +287,58 @@ a.nav-link {
 
 .container-fluid.py-3 {
     border-radius: 0 0 15px 15px;
+}
+
+/* --- Estilos para el Header Responsive --- */
+
+/* Estilo para los enlaces del menú móvil */
+.mobile-nav-link {
+    color: #6bbdda !important; /* Usamos tu color celeste */
+    padding: 0.5rem 0; /* Espaciado vertical */
+    font-size: 1.1rem;
+}
+
+    .mobile-nav-link:hover {
+        /* Tu color dorado al pasar el mouse */
+        color: #f1c864 !important;
+    }
+
+/* Estilo para los divisores en el menú móvil */
+.mobile-nav-divider {
+    border: 0;
+    border-top: 1px solid;
+    color: #f1c864 !important;
+    margin: 0.5rem 0;
+}
+
+/* --- Estilos para el Menú Offcanvas --- */
+
+.offcanvas {
+    background-color: #0C4251; /* Tu color de fondo principal */
+    color: white;
+}
+
+.offcanvas-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.offcanvas-title {
+    color: #f1c864; /* Tu color dorado para el título */
+}
+
+/* Ajustes para los enlaces y divisores dentro del offcanvas */
+.offcanvas-body .mobile-nav-link {
+    font-size: 1.2rem;
+    padding: 0.75rem 0;
+}
+
+.offcanvas-body .mobile-nav-divider {
+    margin: 0.75rem 0;
+}
+
+.offcanvas-header .btn-close {
+    margin-left: auto; /* Empuja el botón 'X' a la derecha */
+    padding-right: 0.5rem; /* Pequeño ajuste de espaciado */
 }
 
 

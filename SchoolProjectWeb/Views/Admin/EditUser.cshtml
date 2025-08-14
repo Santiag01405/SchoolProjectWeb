@@ -3,6 +3,10 @@
 <h2 class="main-title text-center mb-4">Editar Usuario</h2>
 
 <form asp-action="EditUser" method="post" class="card shadow-sm p-4 border-0">
+
+    @* Para ver errores en la pagina de editar *@
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
     <input type="hidden" asp-for="UserID" />
 
     <div class="mb-3">

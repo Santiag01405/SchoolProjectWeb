@@ -147,6 +147,8 @@ namespace SchoolProjectWeb.Controllers
             return RedirectToAction(nameof(ListUsers));
         }
 
+        // EDITAR USUARIOS
+
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
@@ -155,27 +157,38 @@ namespace SchoolProjectWeb.Controllers
 
             SetAuthorizationHeader(GetTokenFromSession());
             var schoolId = GetSchoolIdFromSession();
+
             var payload = new
             {
                 userID = model.UserID,
                 userName = model.UserName,
                 email = model.Email,
                 roleID = model.RoleID,
-                schoolID = schoolId.Value
+                schoolID = schoolId.Value,
+
+                // LÓGICA CLAVE:
+                // Si el campo Password del formulario está vacío, usa el PasswordHash original que guardamos.
+                // Si no está vacío, usa la NUEVA contraseña que escribió el usuario.
+                passwordHash = !string.IsNullOrEmpty(model.Password) ? model.Password : model.PasswordHash
             };
 
             var json = JsonSerializer.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"api/users/{model.UserID}?schoolId={schoolId}", content);
+
+            // La API espera recibir el objeto completo, así que la URL no necesita más parámetros.
+            var response = await _httpClient.PutAsync($"api/users/{model.UserID}", content);
 
             if (response.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Usuario actualizado con éxito.";
                 return RedirectToAction(nameof(ListUsers));
             }
-
-            TempData["Error"] = "Error al actualizar el usuario.";
-            return View(model);
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Error de la API: {errorContent}");
+                return View(model);
+            }
         }
 
         [HttpPost]
@@ -312,8 +325,8 @@ namespace SchoolProjectWeb.Controllers
         }
 
 
-
-
+        //Editar Cursos 
+        
         [HttpPost]
         public async Task<IActionResult> EditCourse(CourseViewModel model)
         {

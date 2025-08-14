@@ -1532,5 +1532,36 @@ namespace SchoolProjectWeb.Controllers
             TempData["Success"] = "Calificaciones asignadas correctamente.";
             return RedirectToAction("ListEvaluations");
         }
+
+        // 🔹 GET: Muestra los cursos que imparte un profesor específico
+        [HttpGet]
+        public async Task<IActionResult> ViewTaughtCourses(int userId)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+
+            // 1. Pedimos a la API los cursos para este profesor
+            var response = await _httpClient.GetAsync($"api/courses/user/{userId}/taught-courses?schoolId={schoolId}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Si hay un error (ej. el profesor no tiene cursos), mostramos un mensaje
+                TempData["Error"] = "No se encontraron cursos para este profesor o hubo un error al consultarlos.";
+                return RedirectToAction("ListUsers");
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var courses = JsonSerializer.Deserialize<List<TaughtCourseViewModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<TaughtCourseViewModel>();
+
+            // 2. Obtenemos el nombre del profesor para mostrarlo en el título
+            var user = await GetUserByIdAsync(userId);
+            ViewBag.TeacherName = user?.UserName ?? "Profesor Desconocido";
+            ViewBag.TeacherID = userId;
+
+            // 3. Enviamos la lista de cursos a la vista para ser mostrada
+            return View(courses);
+        }
     }
 }

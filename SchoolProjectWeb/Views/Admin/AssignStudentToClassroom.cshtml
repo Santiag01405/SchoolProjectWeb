@@ -5,47 +5,44 @@
     ViewData["Title"] = "Asignar Estudiante a Salón";
 }
 
-<h1>Asignar Estudiante a Salón</h1>
-
+<h1 class="main-title">Asignar <span class="brand-name">Estudiante</span> a Salón</h1>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AssignStudentToClassroom" method="post">
-            <div class="form-group">
-                <label for="SelectedUserId" class="control-label">Estudiante:</label>
-                <select id="SelectedUserId" name="SelectedUserId" class="form-control">
-                    <option value="">-- Seleccione un estudiante --</option>
-                    @if (Model.Students != null)
-                    {
-                        @foreach (var student in Model.Students)
-                        {
-                            <option value="@student.UserID">@student.UserName</option>
-                        }
-                    }
-                </select>
-            </div>
 
-            <div class="form-group mt-3">
-                <label for="SelectedClassroomId" class="control-label">Salón:</label>
-                <select id="SelectedClassroomId" name="SelectedClassroomId" class="form-control">
-                    <option value="">-- Seleccione un salón --</option>
-                    @if (Model.Classrooms != null)
-                    {
-                        @foreach (var classroom in Model.Classrooms)
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="form-box">
+            <form asp-action="AssignStudentToClassroom" method="post">
+                <div class="form-group">
+                    <label for="SelectedUserId" class="control-label">Estudiante:</label>
+                    <select id="SelectedUserId" name="SelectedUserId" class="form-control">
+                        <option value="">-- Seleccione un estudiante --</option>
+                        @if (Model.Students != null)
                         {
-                            <option value="@classroom.ClassroomID">@classroom.Name</option>
+                            @foreach (var student in Model.Students)
+                            {
+                                <option value="@student.UserID">@student.UserName</option>
+                            }
                         }
-                    }
-                </select>
-            </div>
-
-            <div class="form-group mt-3">
-                <input type="submit" value="Asignar" class="btn btn-primary" />
-            </div>
-        </form>
+                    </select>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="SelectedClassroomId" class="control-label">Salón:</label>
+                    <select id="SelectedClassroomId" name="SelectedClassroomId" class="form-control">
+                        <option value="">-- Seleccione un salón --</option>
+                        @if (Model.Classrooms != null)
+                        {
+                            @foreach (var classroom in Model.Classrooms)
+                            {
+                                <option value="@classroom.ClassroomID">@classroom.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group mt-4 text-center">
+                    <input type="submit" value="Asignar" class="btn btn-primary-custom" />
+                    <a asp-action="ListClassrooms" class="btn btn-secondary-custom ms-2">Volver a la lista de salones</a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div class="mt-3">
-    <a asp-action="ListClassrooms">Volver a la lista de salones</a>
 </div>

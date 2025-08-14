@@ -1204,7 +1204,9 @@ namespace SchoolProjectWeb.Controllers
             SetAuthorizationHeader(GetTokenFromSession());
 
             // Llamada para obtener la lista de estudiantes
-            var response = await _httpClient.GetAsync($"api/classrooms/{classroomId}/students");
+            // Código corregido
+            var schoolId = GetSchoolIdFromSession();
+            var response = await _httpClient.GetAsync($"api/classrooms/{classroomId}/students?schoolId={schoolId}");
 
             List<User> students = new List<User>();
             if (response.IsSuccessStatusCode)

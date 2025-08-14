@@ -5,9 +5,9 @@
     ViewData["Title"] = "Ver hijos por padre";
 }
 
-<h1>Ver hijos por padre</h1>
+<h1 class="main-title">Ver hijos por <span class="brand-name">padre</span></h1>
 
-<div class="card">
+<div class="card card-custom card-zoom2">
     <div class="card-body">
         <h5 class="card-title">Selecciona un padre</h5>
         <form asp-action="ViewChildrenOfParent" method="get">
@@ -27,7 +27,7 @@
                     }
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary mt-3">Ver hijos</button>
+            <button type="submit" class="btn btn-primary-custom mt-3">Ver hijos</button>
         </form>
     </div>
 </div>
@@ -35,5 +35,5 @@
 <hr />
 
 <div>
-    <a asp-action="CreateUserRelationship" class="btn btn-secondary">Ir a creación de relaciones</a>
+    <a asp-action="CreateUserRelationship" class="btn btn-secondary-custom">Ir a creación de relaciones</a>
 </div>

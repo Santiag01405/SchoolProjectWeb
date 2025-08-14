@@ -4,12 +4,12 @@
     ViewData["Title"] = $"Estudiantes en {ViewBag.ClassroomName}";
 }
 
-<h1>Estudiantes en el salón: @ViewBag.ClassroomName</h1>
+<h1 class="main-title">Estudiantes en el salón: <span class="brand-name">@ViewBag.ClassroomName</span></h1>
 
 @if (Model != null && Model.Any())
 {
-    <table class="table">
-        <thead>
+    <table class="table table-hover table-striped">
+        <thead class="bg-secondary text-white">
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
@@ -33,4 +33,4 @@ else
     <div class="alert alert-info">No se encontraron estudiantes en este salón.</div>
 }
 
-<a asp-action="ListClassrooms" class="btn btn-secondary">Volver a la lista de salones</a>
+<a asp-action="ListClassrooms" class="btn btn-secondary-custom mt-3">Volver a la lista de salones</a>

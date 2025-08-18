@@ -73,6 +73,16 @@
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
+                                Actividades <i class="fa fa-caret-down caret-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu" style="background-color: #0C4251;">
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="ListExtracurriculars">Ver Actividades</a></li>
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateExtracurricular">Crear Actividad</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
                                 Evaluaciones <i class="fa fa-caret-down caret-icon"></i>
                             </a>
                             <ul class="dropdown-menu" style="background-color: #0C4251;">
@@ -92,6 +102,8 @@
                             <a class="nav-link" style="color: #6bbdda;" asp-controller="Login" asp-action="Logout">Cerrar sesión <i class="fa-solid fa-right-from-bracket"></i></a>
                         </li>
                     </ul>
+
+                    
                 </div>
             </div>
         </nav>
@@ -132,6 +144,7 @@
                 <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="ListEvaluations">Ver Evaluaciones</a></li>
                 <li><a class="nav-link mobile-nav-link" asp-controller="Admin" asp-action="CreateEvaluation">Crear Evaluación</a></li>
 
+                
                 <hr class="mobile-nav-divider" />
 
                 <ul class="navbar-nav">

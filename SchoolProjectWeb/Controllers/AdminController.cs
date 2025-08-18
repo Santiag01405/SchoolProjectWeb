@@ -1576,5 +1576,94 @@ namespace SchoolProjectWeb.Controllers
             // 3. Enviamos la lista de cursos a la vista para ser mostrada
             return View(courses);
         }
+
+        
+        // ----------------------------------------------------------------------
+        // ACCIONES PARA ACTIVIDADES EXTRACURRICULARES
+        // ----------------------------------------------------------------------
+
+        // 🔹 GET: Muestra la lista de actividades extracurriculares
+        [HttpGet]
+        public async Task<IActionResult> ListExtracurriculars()
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+
+            // 💡 NOTA: La ruta es "api/extracurriculars" como vimos en el controller de la API
+            var response = await _httpClient.GetAsync($"api/extracurriculars?schoolId={schoolId}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Error al obtener la lista de actividades.";
+                return View(new List<ExtracurricularViewModel>());
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var activities = JsonSerializer.Deserialize<List<ExtracurricularViewModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<ExtracurricularViewModel>();
+
+            return View(activities);
+        }
+
+        // 🔹 GET: Muestra el formulario para crear una nueva actividad
+        [HttpGet]
+        public async Task<IActionResult> CreateExtracurricular()
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            // Obtenemos la lista de profesores para el menú desplegable
+            var teachers = await GetTeachersAsync(); // Usamos el método que ya tienes
+            var model = new ExtracurricularViewModel
+            {
+                Teachers = teachers
+            };
+
+            return View(model);
+        }
+
+        // 🔹 POST: Procesa el formulario de creación y envía los datos a la API
+        [HttpPost]
+        public async Task<IActionResult> CreateExtracurricular(ExtracurricularViewModel model)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            // Si los datos del formulario no son válidos, volvemos a mostrar el formulario con los errores
+            if (!ModelState.IsValid)
+            {
+                model.Teachers = await GetTeachersAsync(); // Recargamos la lista de profesores
+                return View(model);
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+
+            var payload = new
+            {
+                name = model.Name,
+                description = model.Description,
+                dayOfWeek = model.DayOfWeek,
+                userID = model.UserID,
+                schoolID = schoolId.Value
+            };
+
+            var json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // 💡 NOTA: La ruta es "api/extracurriculars/create" según el controller de la API
+            var response = await _httpClient.PostAsync("api/extracurriculars/create", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Actividad creada correctamente.";
+                return RedirectToAction("ListExtracurriculars");
+            }
+            else
+            {
+                TempData["Error"] = "Error al crear la actividad.";
+                model.Teachers = await GetTeachersAsync(); // Recargamos la lista de profesores
+                return View(model);
+            }
+        }
     }
 }

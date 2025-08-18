@@ -1,42 +1,45 @@
 ﻿@model SchoolProjectWeb.Models.AssignClassroomViewModel
 
 @{
-    ViewData["Title"] = "Asignar Salón a Curso";
+	ViewData["Title"] = "Asignar Salón a Curso";
 }
 
-<h1>Asignar Salón a Curso</h1>
+<h1 class="main-title">Asignar Salón a Curso</h1>
 <hr />
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AssignClassroom">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row justify-content-center">
+	<div class="col-md-8 col-lg-6">
+		<div class="form-box">
+			<form asp-action="AssignClassroom">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="CourseID" class="control-label">Curso</label>
-                <select asp-for="CourseID" class="form-control" asp-items="ViewBag.Courses">
-                    <option value="">-- Seleccione un Curso --</option>
-                </select>
-                <span asp-validation-for="CourseID" class="text-danger"></span>
-            </div>
+				<div class="form-group">
+					<label asp-for="CourseID" class="control-label">Curso</label>
+					<select asp-for="CourseID" class="form-control" asp-items="ViewBag.Courses">
+						<option value="">-- Seleccione un Curso --</option>
+					</select>
+					<span asp-validation-for="CourseID" class="text-danger"></span>
+				</div>
 
-            <div class="form-group mt-3">
-                <label asp-for="ClassroomID" class="control-label">Salón</label>
-                <select asp-for="ClassroomID" class="form-control" asp-items="ViewBag.Classrooms">
-                    <option value="">-- Seleccione un Salón --</option>
-                </select>
-                <span asp-validation-for="ClassroomID" class="text-danger"></span>
-            </div>
+				<div class="form-group mt-3">
+					<label asp-for="ClassroomID" class="control-label">Salón</label>
+					<select asp-for="ClassroomID" class="form-control" asp-items="ViewBag.Classrooms">
+						<option value="">-- Seleccione un Salón --</option>
+					</select>
+					<span asp-validation-for="ClassroomID" class="text-danger"></span>
+				</div>
 
-            <div class="form-group mt-3">
-                <input type="submit" value="Asignar" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+				<div class="form-group mt-4 text-center">
+					<input type="submit" value="Asignar" class="btn btn-primary-custom" />
+					<a asp-action="Index" class="btn btn-secondary-custom ml-2">Cancelar</a>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 }

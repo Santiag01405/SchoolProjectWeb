@@ -5,13 +5,13 @@
     int evaluationId = ViewBag.EvaluationId;
 }
 
-<h1>Asignar Calificaciones</h1>
+<h1 class="main-title">Asignar <span class="brand-name">Calificaciones</span></h1>
 <hr />
 
 <form asp-action="AssignGrades" method="post">
     <input type="hidden" name="evaluationId" value="@evaluationId" />
-    <table class="table">
-        <thead>
+    <table class="table table-hover table-striped">
+        <thead class="bg-primary text-white">
             <tr>
                 <th>Estudiante</th>
                 <th>Calificación</th>
@@ -37,9 +37,9 @@
             }
         </tbody>
     </table>
-    <div class="form-group mt-3">
-        <button type="submit" class="btn btn-primary">Guardar Calificaciones</button>
-        <a asp-action="ListEvaluations" class="btn btn-secondary">Cancelar</a>
+    <div class="form-group mt-4 text-center">
+        <button type="submit" class="btn btn-primary-custom">Guardar Calificaciones</button>
+        <a asp-action="ListEvaluations" class="btn btn-secondary-custom ms-2">Cancelar</a>
     </div>
 </form>
 

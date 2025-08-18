@@ -4,12 +4,12 @@
     ViewData["Title"] = $"Hijos de {ViewBag.ParentName}";
 }
 
-<h1>Hijos de @ViewBag.ParentName</h1>
+<h1 class="main-title">Hijos de <span class="brand-name">@ViewBag.ParentName</span></h1>
 
 @if (Model != null && Model.Any())
 {
-    <table class="table">
-        <thead>
+    <table class="table table-hover table-striped">
+        <thead class="bg-secondary text-white">
             <tr>
                 <th>Nombre del Hijo</th>
                 <th>Email</th>
@@ -20,6 +20,7 @@
             {
                 <tr>
                     <td>@child.StudentName</td>
+                    <td>@child.Email</td>
                 </tr>
             }
         </tbody>
@@ -30,4 +31,4 @@ else
     <div class="alert alert-info">No se encontraron hijos para este padre.</div>
 }
 
-<a asp-action="ViewChildren" class="btn btn-secondary">Volver a la vista de padres</a>
+<a asp-action="ViewChildren" class="btn btn-secondary-custom mt-3">Volver a la vista de padres</a>

@@ -1,24 +1,24 @@
 ﻿@model List<SchoolProjectWeb.Models.Evaluation>
 
 @{
-    ViewData["Title"] = "Evaluaciones";
+    ViewData["Title"] = "Gestión de Evaluaciones";
 }
 
-<h1>Evaluaciones</h1>
+<h1 class="main-title">Gestión de <span class="brand-name">Evaluaciones</span></h1>
 
-<p>
-    <a asp-action="CreateEvaluation">Crear Nueva Evaluación</a>
+<p class="mb-4">
+    <a asp-action="CreateEvaluation" class="btn btn-primary-custom">Crear Nueva Evaluación</a>
 </p>
 
 @if (Model.Any())
 {
-    <table class="table">
-        <thead>
+    <table class="table table-hover table-striped">
+        <thead class="bg-secondary text-white">
             <tr>
                 <th>Título</th>
                 <th>Descripción</th>
                 <th>Fecha</th>
-                <th>Acciones</th>
+                <th class="text-center">Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -28,11 +28,11 @@
                     <td>@evaluation.Title</td>
                     <td>@evaluation.Description</td>
                     <td>@evaluation.Date.ToShortDateString()</td>
-                    <td>
-                        <a href="@Url.Action("AssignGrades", "Admin", new { evaluationId = evaluation.EvaluationID })" class="btn btn-success btn-sm">Asignar Calificaciones</a>
-                        <a href="@Url.Action("EditEvaluation", "Admin", new { id = evaluation.EvaluationID })" class="btn btn-warning">Editar</a>
+                    <td class="d-flex justify-content-center">
+                        <a href="@Url.Action("AssignGrades", "Admin", new { evaluationId = evaluation.EvaluationID })" class="btn btn-info-custom btn-sm me-2">Asignar Calificaciones</a>
+                        <a href="@Url.Action("EditEvaluation", "Admin", new { id = evaluation.EvaluationID })" class="btn btn-edit btn-sm me-2">Editar</a>
                         <form asp-action="DeleteEvaluation" method="post" asp-route-id="@evaluation.EvaluationID" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta evaluación?');">
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -42,5 +42,5 @@
 }
 else
 {
-    <p>No se encontraron evaluaciones.</p>
+    <div class="alert alert-info">No se encontraron evaluaciones.</div>
 }

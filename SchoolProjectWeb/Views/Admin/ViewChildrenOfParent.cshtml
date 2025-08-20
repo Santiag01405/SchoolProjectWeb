@@ -6,6 +6,15 @@
 
 <h1 class="main-title">Hijos de <span class="brand-name">@ViewBag.ParentName</span></h1>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mt-3">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mt-3">@TempData["Error"]</div>
+}
+
 @if (Model != null && Model.Any())
 {
     <table class="table table-hover table-striped">
@@ -13,6 +22,7 @@
             <tr>
                 <th>Nombre del Hijo</th>
                 <th>Email</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -21,6 +31,10 @@
                 <tr>
                     <td>@child.StudentName</td>
                     <td>@child.Email</td>
+                    <td>
+                        <a asp-action="EditUserRelationship" asp-route-id="@child.RelationID" class="btn btn-sm btn-primary">Editar</a>
+                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-relation-id="@child.RelationID">Eliminar</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -32,3 +46,43 @@ else
 }
 
 <a asp-action="ViewChildren" class="btn btn-secondary-custom mt-3">Volver a la vista de padres</a>
+
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar esta relación? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" asp-action="DeleteUserRelationship" method="post" style="display:inline;">
+                    <input type="hidden" name="relationId" id="relationIdInput" />
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        var relationIdInput = document.getElementById('relationIdInput');
+
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                var relationId = this.getAttribute('data-relation-id');
+                relationIdInput.value = relationId;
+                deleteModal.show();
+            });
+        });
+    });
+</script>
+
+
+

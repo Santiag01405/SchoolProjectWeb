@@ -7,5 +7,6 @@
         public string Target { get; set; } = "all"; // all, role, user
         public int? RoleID { get; set; }
         public int? UserID { get; set; }
+        public int? ClassroomID { get; set; }
     }
 }

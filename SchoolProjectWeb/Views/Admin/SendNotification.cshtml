@@ -1,145 +1,167 @@
 ﻿@model SchoolProjectWeb.Models.NotificationSendViewModel
 
 @{
-    ViewData["Title"] = "Enviar Notificación";
-    var usuarios = ViewBag.Usuarios as List<SchoolProjectWeb.Models.User>;
+	ViewData["Title"] = "Enviar Notificación";
+	var usuarios = ViewBag.Usuarios as List<SchoolProjectWeb.Models.User>;
+	var classrooms = ViewBag.Classrooms as List<SchoolProjectWeb.Models.ClassroomViewModel>;
 }
 
 <h2 class="main-title text-center mb-4">Enviar Notificación</h2>
 
 @if (TempData["Success"] != null)
 {
-    <div class="alert alert-success" role="alert">@TempData["Success"]</div>
+	<div class="alert alert-success" role="alert">@TempData["Success"]</div>
 }
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+	<div class="alert alert-danger" role="alert">@TempData["Error"]</div>
 }
 
 <form asp-action="SendNotification" method="post" class="card shadow-sm p-4 border-0 form-expand-check">
-    <div class="mb-3">
-        <label asp-for="Title" class="form-label fw-bold">Título:</label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+	<div class="mb-3">
+		<label asp-for="Title" class="form-label fw-bold">Título:</label>
+		<input asp-for="Title" class="form-control" />
+		<span asp-validation-for="Title" class="text-danger"></span>
+	</div>
 
-    <div class="mb-3">
-        <label asp-for="Content" class="form-label fw-bold">Contenido:</label>
-        <textarea asp-for="Content" class="form-control"></textarea>
-        <span asp-validation-for="Content" class="text-danger"></span>
-    </div>
+	<div class="mb-3">
+		<label asp-for="Content" class="form-label fw-bold">Contenido:</label>
+		<textarea asp-for="Content" class="form-control"></textarea>
+		<span asp-validation-for="Content" class="text-danger"></span>
+	</div>
 
-    <div class="mb-3">
-        <label asp-for="Target" class="form-label">Destino:</label>
-        <select asp-for="Target" class="form-select" id="targetSelect">
-            <option value="all">Todos</option>
-            <option value="role">Por Rol</option>
-            <option value="user">Usuario específico</option>
-        </select>
-        <span asp-validation-for="Target" class="text-danger"></span>
-    </div>
+	<div class="mb-3">
+		<label asp-for="Target" class="form-label">Destino:</label>
+		<select asp-for="Target" class="form-select" id="targetSelect">
+			<option value="all">Todos</option>
+			<option value="role">Por Rol</option>
+			<option value="classroom">Por Salón</option>
+			<option value="user">Usuario específico</option>
+		</select>
+		<span asp-validation-for="Target" class="text-danger"></span>
+	</div>
 
-    <div class="mb-3" id="roleGroup" style="display: none;">
-        <label asp-for="RoleID" class="form-label">Selecciona Rol:</label>
-        <select asp-for="RoleID" class="form-select">
-            <option value="1">Alumnos</option>
-            <option value="2">Profesores</option>
-            <option value="3">Padres</option>
-        </select>
-        <span asp-validation-for="RoleID" class="text-danger"></span>
-    </div>
+	<div class="mb-3" id="roleGroup" style="display: none;">
+		<label asp-for="RoleID" class="form-label">Selecciona Rol:</label>
+		<select asp-for="RoleID" class="form-select">
+			<option value="1">Alumnos</option>
+			<option value="2">Profesores</option>
+			<option value="3">Padres</option>
+		</select>
+		<span asp-validation-for="RoleID" class="text-danger"></span>
+	</div>
 
-    <div class="mb-3" id="userGroup" style="display: none;">
-        <label class="form-label">Buscar Usuario:</label>
-        <input type="text" id="userSearchInput" class="form-control" placeholder="Escribe un nombre..." />
-        <select asp-for="UserID" class="form-select mt-2" id="userDropdown">
-            <option value="">Seleccione un usuario...</option>
-        </select>
-        <span asp-validation-for="UserID" class="text-danger"></span>
-    </div>
+	<div class="mb-3" id="classroomGroup" style="display: none;">
+		<label asp-for="ClassroomID" class="form-label">Selecciona Salón:</label>
+		<select asp-for="ClassroomID" class="form-select">
+			<option value="">Selecciona un salón...</option>
+			@if (classrooms != null)
+			{
+				foreach (var c in classrooms)
+				{
+					<option value="@c.ClassroomID">@c.Name</option>
+				}
+			}
+		</select>
+		<span asp-validation-for="ClassroomID" class="text-danger"></span>
+	</div>
 
-    <button type="submit" class="btn btn-hardblue">Enviar</button>
+	<div class="mb-3" id="userGroup" style="display: none;">
+		<label class="form-label">Buscar Usuario:</label>
+		<input type="text" id="userSearchInput" class="form-control" placeholder="Escribe un nombre..." />
+		<select asp-for="UserID" class="form-select mt-2" id="userDropdown">
+			<option value="">Seleccione un usuario...</option>
+		</select>
+		<span asp-validation-for="UserID" class="text-danger"></span>
+	</div>
+
+	<button type="submit" class="btn btn-hardblue">Enviar</button>
 </form>
 
 <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector(".form-expand-check");
+		document.addEventListener("DOMContentLoaded", function () {
+		const form = document.querySelector(".form-expand-check");
 
-        // Inputs visibles excepto tipo hidden, email, password, y excluyendo el select 'Target'
-        const inputs = form.querySelectorAll(
-            "input:not([type=hidden]):not([type=email]):not([type=password]), textarea"
-        );
+		// Inputs visibles excepto tipo hidden, email, password, y excluyendo el select 'Target'
+		const inputs = form.querySelectorAll(
+			"input:not([type=hidden]):not([type=email]):not([type=password]), textarea"
+		);
 
-        function checkInputs() {
-            let hasContent = false;
-            inputs.forEach(input => {
-                console.log(`Revisando input ${input.name || input.id}: "${input.value}"`);
-                if (input.value.trim() !== "") {
-                    hasContent = true;
-                    console.log("Contenido detectado:", input.name || input.id);
-                }
-            });
-            console.log("Clase 'expanded' activada:", hasContent);
-            form.classList.toggle("expanded", hasContent);
-        }
+		function checkInputs() {
+			let hasContent = false;
+			inputs.forEach(input => {
+				console.log(`Revisando input ${input.name || input.id}: "${input.value}"`);
+				if (input.value.trim() !== "") {
+					hasContent = true;
+					console.log("Contenido detectado:", input.name || input.id);
+				}
+			});
+			console.log("Clase 'expanded' activada:", hasContent);
+			form.classList.toggle("expanded", hasContent);
+		}
 
-        inputs.forEach(input => {
-            input.addEventListener("input", checkInputs);
-            input.addEventListener("change", checkInputs);
-        });
+		inputs.forEach(input => {
+			input.addEventListener("input", checkInputs);
+			input.addEventListener("change", checkInputs);
+		});
 
-        checkInputs();
+		checkInputs();
 
-        // --- El resto del script para targetSelect y búsqueda usuarios ---
+		// --- El resto del script para targetSelect y búsqueda usuarios ---
 
-        const targetSelect = document.getElementById("targetSelect");
-        const roleGroup = document.getElementById("roleGroup");
-        const userGroup = document.getElementById("userGroup");
+		const targetSelect = document.getElementById("targetSelect");
+		const roleGroup = document.getElementById("roleGroup");
+		const userGroup = document.getElementById("userGroup");
+		const classroomGroup = document.getElementById("classroomGroup");
 
-        targetSelect.addEventListener("change", () => {
-            const value = targetSelect.value;
-            roleGroup.style.display = value === "role" ? "block" : "none";
-            userGroup.style.display = value === "user" ? "block" : "none";
-        });
 
-        const userSearchInput = document.getElementById("userSearchInput");
-        const userDropdown = document.getElementById("userDropdown");
+		targetSelect.addEventListener("change", () => {
+			const value = targetSelect.value;
+			roleGroup.style.display = value === "role" ? "block" : "none";
+			userGroup.style.display = value === "user" ? "block" : "none";
+			classroomGroup.style.display = value === "classroom" ? "block" : "none";
+		});
 
-        userSearchInput.addEventListener("input", async () => {
-            const query = userSearchInput.value;
+		const userSearchInput = document.getElementById("userSearchInput");
+		const userDropdown = document.getElementById("userDropdown");
 
-            if (query.length < 2) {
-                userDropdown.innerHTML = '<option value="">Escribe al menos 2 letras...</option>';
-                return;
-            }
+		userSearchInput.addEventListener("input", async () => {
+			const query = userSearchInput.value;
 
-            const response = await fetch(`/Admin/SearchUsers?search=${encodeURIComponent(query)}`);
-            const users = await response.json();
+			if (query.length < 2) {
+				userDropdown.innerHTML = '<option value="">Escribe al menos 2 letras...</option>';
+				return;
+			}
 
-            userDropdown.innerHTML = '';
+			const response = await fetch(`/Admin/SearchUsers?search=${encodeURIComponent(query)}`);
+			const users = await response.json();
 
-            if (users.length === 0) {
-                userDropdown.innerHTML = '<option value="">No se encontraron usuarios</option>';
-                return;
-            }
+			userDropdown.innerHTML = '';
 
-            users.forEach(u => {
-                const option = document.createElement("option");
-                option.value = u.userID;
-                option.textContent = `${u.userName} (${u.email})`;
-                userDropdown.appendChild(option);
-            });
-        });
-    });
+			if (users.length === 0) {
+				userDropdown.innerHTML = '<option value="">No se encontraron usuarios</option>';
+				return;
+			}
+
+			users.forEach(u => {
+				const option = document.createElement("option");
+				option.value = u.userID;
+				option.textContent = `${u.userName} (${u.email})`;
+				userDropdown.appendChild(option);
+			});
+		});
+	});
 
 </script>
 
 <style>
-    .form-expand-check {
-        transition: transform 0.3s ease-in-out;
-    }
+		.form-expand-check {
+				transition: transform 0.3s ease-in-out;
 
-        .form-expand-check.expanded {
-            transform: scale(1.02);
-        }
+	}
+
+			.form-expand-check.expanded {
+					transform: scale(1.02);
+
+	}
 </style>

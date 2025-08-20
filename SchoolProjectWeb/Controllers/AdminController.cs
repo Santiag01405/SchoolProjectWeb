@@ -588,6 +588,135 @@ namespace SchoolProjectWeb.Controllers
             }
             return null;
         }
+
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult>
+    DeleteUserRelationship(int relationId)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var response = await _httpClient.DeleteAsync($"api/relationships/{relationId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Relación eliminada exitosamente.";
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = $"Error al eliminar la relación: {errorContent}";
+            }
+
+            return RedirectToAction("ViewChildren");
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditUserRelationship(int id)
+        {
+            if (!IsSessionValid())
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+
+            // 1. Obtener la relación específica desde la API
+            var relationshipResponse = await _httpClient.GetAsync($"api/relationships/{id}");
+
+            if (!relationshipResponse.IsSuccessStatusCode)
+            {
+                var errorContent = await relationshipResponse.Content.ReadAsStringAsync();
+                TempData["Error"] = $"Error al obtener la relación: {errorContent}";
+                return RedirectToAction("ViewChildren");
+            }
+
+            var relationshipToEdit = await relationshipResponse.Content.ReadFromJsonAsync<UserRelationshipViewModel>();
+
+            if (relationshipToEdit == null)
+            {
+                TempData["Error"] = "La relación no existe o no se pudo cargar.";
+                return RedirectToAction("ViewChildren");
+            }
+
+            // 2. Obtener todos los usuarios para los Dropdowns
+            var usersResponse = await _httpClient.GetAsync($"api/users?schoolId={schoolId}");
+            if (!usersResponse.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Error al obtener la lista de usuarios.";
+                return RedirectToAction("ViewChildren");
+            }
+
+            var allUsers = await usersResponse.Content.ReadFromJsonAsync<List<User>>();
+            if (allUsers == null)
+            {
+                TempData["Error"] = "No se pudo deserializar la lista de usuarios.";
+                return RedirectToAction("ViewChildren");
+            }
+
+            // 3. Crear un ViewModel para la vista de edición
+            var model = new UserRelationshipViewModel
+            {
+                RelationID = relationshipToEdit.RelationID,
+                User1ID = relationshipToEdit.User1ID,
+                User2ID = relationshipToEdit.User2ID,
+                RelationshipType = relationshipToEdit.RelationshipType,
+                Parents = allUsers.Where(u => u.RoleID == 3).ToList(),
+                Children = allUsers.Where(u => u.RoleID == 1).ToList()
+            };
+
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUserRelationship(UserRelationshipViewModel model)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            // Declara la variable schoolId una sola vez al inicio del método.
+            var schoolId = GetSchoolIdFromSession();
+
+            if (!ModelState.IsValid)
+            {
+                // Recargar los Dropdowns en caso de error de validación
+                SetAuthorizationHeader(GetTokenFromSession());
+                var usersResponse = await _httpClient.GetAsync($"api/users?schoolId={schoolId}");
+                var allUsers = await usersResponse.Content.ReadFromJsonAsync<List<User>>();
+
+                model.Parents = allUsers?.Where(u => u.RoleID == 3).ToList() ?? new List<User>();
+                model.Children = allUsers?.Where(u => u.RoleID == 1).ToList() ?? new List<User>();
+
+                return View(model);
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+
+            // Preparar el payload para la API PUT
+            var payload = new
+            {
+                relationID = model.RelationID,
+                user1ID = model.User1ID,
+                user2ID = model.User2ID,
+                relationshipType = model.RelationshipType,
+                schoolID = schoolId
+            };
+
+            var response = await _httpClient.PutAsJsonAsync($"api/relationships/{model.RelationID}", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Relación actualizada exitosamente.";
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = $"Error al actualizar la relación: {errorContent}";
+            }
+
+            return RedirectToAction("ViewChildren");
+        }
         //---------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -851,67 +980,108 @@ namespace SchoolProjectWeb.Controllers
             return Json(users);
         }
 
+        [HttpGet]
         public async Task<IActionResult> SendNotification()
         {
-            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+            if (!IsSessionValid())
+            {
+                return RedirectToAction("Login", "Login");
+            }
 
             SetAuthorizationHeader(GetTokenFromSession());
             var schoolId = GetSchoolIdFromSession();
-            var response = await _httpClient.GetAsync($"api/users?schoolId={schoolId}");
-            var users = await response.Content.ReadFromJsonAsync<List<User>>();
 
-            ViewBag.Usuarios = users;
+            // Llama a la API para obtener la lista de usuarios y salones
+            var usersResponse = await _httpClient.GetAsync($"api/users?schoolId={schoolId}");
+            if (usersResponse.IsSuccessStatusCode)
+            {
+                var users = await usersResponse.Content.ReadFromJsonAsync<List<User>>();
+                ViewBag.Usuarios = users;
+            }
+            else
+            {
+                ViewBag.Usuarios = new List<User>();
+            }
+
+            // ⭐ NUEVA LÓGICA AGREGADA: Cargar la lista de salones para la vista ⭐
+            var classroomsResponse = await _httpClient.GetAsync($"api/classrooms?schoolId={schoolId}");
+            if (classroomsResponse.IsSuccessStatusCode)
+            {
+                var classrooms = await classroomsResponse.Content.ReadFromJsonAsync<List<ClassroomViewModel>>();
+                ViewBag.Classrooms = classrooms;
+            }
+            else
+            {
+                ViewBag.Classrooms = new List<ClassroomViewModel>();
+                TempData["Error"] = "Error al obtener la lista de salones.";
+            }
+
             return View(new NotificationSendViewModel());
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendNotification(NotificationSendViewModel model)
-        {
-            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> SendNotification(NotificationSendViewModel model)
+{
+    if (!IsSessionValid())
+    {
+        return RedirectToAction("Login", "Login");
+    }
 
-            SetAuthorizationHeader(GetTokenFromSession());
-            var schoolId = GetSchoolIdFromSession();
-            var notification = new
-            {
-                title = model.Title,
-                content = model.Content,
-                date = DateTime.UtcNow,
-                isRead = false,
-                userID = model.UserID ?? 0,
-                schoolID = schoolId.Value
-            };
+    if (!ModelState.IsValid)
+    {
+        // Si hay errores de validación, se recarga la vista.
+        // Es necesario recargar el ViewBag.Classrooms si existe.
+        return View(model);
+    }
 
-            HttpResponseMessage response;
+    SetAuthorizationHeader(GetTokenFromSession());
+    var schoolId = GetSchoolIdFromSession();
+    var notification = new
+    {
+        title = model.Title,
+        content = model.Content
+    };
 
-            if (model.Target == "all")
-            {
-                response = await _httpClient.PostAsJsonAsync($"api/notifications/send-to-all?schoolId={schoolId}", notification);
-            }
-            else if (model.Target == "role" && model.RoleID.HasValue)
-            {
-                response = await _httpClient.PostAsJsonAsync($"api/notifications/send-to-role?roleId={model.RoleID}&schoolId={schoolId}", notification);
-            }
-            else if (model.Target == "user" && model.UserID.HasValue)
-            {
-                response = await _httpClient.PostAsJsonAsync("api/notifications", notification);
-            }
-            else
-            {
-                ModelState.AddModelError("", "Destino inválido");
-                return View(model);
-            }
+    HttpResponseMessage response;
 
-            if (response.IsSuccessStatusCode)
-            {
-                TempData["Success"] = "Notificación enviada correctamente.";
-                var users = await _httpClient.GetFromJsonAsync<List<User>>($"api/users?schoolId={schoolId}");
-                ViewBag.Usuarios = users;
-                return View(new NotificationSendViewModel());
-            }
+    if (model.Target == "all")
+    {
+        response = await _httpClient.PostAsJsonAsync($"api/notifications/send-to-all?schoolId={schoolId}", notification);
+    }
+    else if (model.Target == "role" && model.RoleID.HasValue)
+    {
+        response = await _httpClient.PostAsJsonAsync($"api/notifications/send-to-role?roleId={model.RoleID}&schoolId={schoolId}", notification);
+    }
+    else if (model.Target == "user" && model.UserID.HasValue)
+    {
+        response = await _httpClient.PostAsJsonAsync("api/notifications", notification);
+    }
+    else if (model.Target == "classroom" && model.ClassroomID.HasValue)
+    {
+        // Nueva lógica para enviar a un salón
+        response = await _httpClient.PostAsJsonAsync($"api/notifications/send-to-class?schoolId={schoolId}&classroomId={model.ClassroomID}", notification);
+    }
+    else
+    {
+        ModelState.AddModelError("", "Selección de destino inválida.");
+        // Si hay errores de validación, se recarga la vista.
+        return View(model);
+    }
 
-            ModelState.AddModelError("", "Error al enviar notificación.");
-            return View(model);
-        }
+    if (response.IsSuccessStatusCode)
+    {
+        TempData["Success"] = "Notificación enviada correctamente.";
+    }
+    else
+    {
+        var errorContent = await response.Content.ReadAsStringAsync();
+        TempData["Error"] = $"Error al enviar la notificación: {errorContent}";
+    }
+
+    // Al finalizar, redirigimos para evitar reenvío del formulario
+    return RedirectToAction(nameof(SendNotification));
+}
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         //-----Dashboard------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1666,6 +1836,172 @@ namespace SchoolProjectWeb.Controllers
                 model.Teachers = await GetTeachersAsync(); // Recargamos la lista de profesores
                 return View(model);
             }
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditExtracurricular(int id)
+        {
+            // Verifica la sesión del usuario
+            if (!IsSessionValid())
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+
+            // 1. Obtener los detalles de la actividad extracurricular
+            var activityResponse = await _httpClient.GetAsync($"api/extracurriculars/{id}?schoolId={schoolId.Value}");
+            if (!activityResponse.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Actividad no encontrada o error al cargar los datos.";
+                return RedirectToAction(nameof(ListExtracurriculars));
+            }
+
+            var activityJson = await activityResponse.Content.ReadAsStringAsync();
+            var activityDto = JsonSerializer.Deserialize<ExtracurricularActivityDto>(activityJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            // 2. Obtener la lista de usuarios del colegio
+            // 💡 SOLUCIÓN: Usamos el endpoint que me proporcionaste
+            var usersResponse = await _httpClient.GetAsync($"api/users?schoolId={schoolId.Value}");
+            List<User> teachers = new List<User>();
+            if (usersResponse.IsSuccessStatusCode)
+            {
+                var usersJson = await usersResponse.Content.ReadAsStringAsync();
+                var allUsers = JsonSerializer.Deserialize<List<User>>(usersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                // 💡 SOLUCIÓN: Filtramos la lista para obtener solo los usuarios con RoleID 2 (profesores)
+                teachers = allUsers.Where(u => u.RoleID == 2).ToList();
+            }
+            else
+            {
+                TempData["Error"] = "Error al cargar la lista de profesores.";
+            }
+
+            // 3. Mapear los datos al ViewModel y devolver la vista
+            var viewModel = new ExtracurricularEditViewModel
+            {
+                ActivityID = activityDto.ActivityID,
+                SchoolID = activityDto.SchoolID,
+                Name = activityDto.Name,
+                Description = activityDto.Description,
+                DayOfWeek = activityDto.DayOfWeek,
+                UserID = activityDto.UserID.HasValue ? activityDto.UserID.Value.ToString() : null,
+                Teachers = teachers
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditExtracurricular(ExtracurricularEditViewModel model)
+        {
+            // Verifica la sesión y valida el modelo
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            // Si el modelo no es válido, recarga la lista de profesores antes de volver a la vista
+            if (!ModelState.IsValid)
+            {
+                SetAuthorizationHeader(GetTokenFromSession());
+                var usersResponse = await _httpClient.GetAsync($"api/users?schoolId={model.SchoolID}");
+                if (usersResponse.IsSuccessStatusCode)
+                {
+                    var usersJson = await usersResponse.Content.ReadAsStringAsync();
+                    var allUsers = JsonSerializer.Deserialize<List<User>>(usersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    model.Teachers = allUsers.Where(u => u.RoleID == 2).ToList();
+                }
+                else
+                {
+                    TempData["Error"] = "Error al recargar la lista de profesores.";
+                    model.Teachers = new List<User>();
+                }
+                return View(model);
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+
+            // 💡 SOLUCIÓN: Convierte el UserID de string a int?
+            int? userIdAsInt = null;
+            if (!string.IsNullOrEmpty(model.UserID))
+            {
+                userIdAsInt = int.Parse(model.UserID);
+            }
+
+            // Crea el DTO para el API
+            var payload = new
+            {
+                name = model.Name,
+                description = model.Description,
+                dayOfWeek = model.DayOfWeek,
+                userId = userIdAsInt, // Usa el valor convertido
+                schoolID = model.SchoolID
+            };
+
+            var json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // 💡 SOLUCIÓN: Modifica la URL para incluir el schoolId
+            var response = await _httpClient.PutAsync($"api/extracurriculars/{model.ActivityID}?schoolId={model.SchoolID}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Actividad actualizada con éxito.";
+                return RedirectToAction(nameof(ListExtracurriculars));
+            }
+            else
+            {
+                var errorJson = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = "Error al actualizar la actividad: " + (string.IsNullOrEmpty(errorJson) ? "Error desconocido." : errorJson);
+
+                var usersResponse = await _httpClient.GetAsync($"api/users?schoolId={model.SchoolID}");
+                if (usersResponse.IsSuccessStatusCode)
+                {
+                    var usersJson = await usersResponse.Content.ReadAsStringAsync();
+                    var allUsers = JsonSerializer.Deserialize<List<User>>(usersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    model.Teachers = allUsers.Where(u => u.RoleID == 2).ToList();
+                }
+                else
+                {
+                    TempData["Error"] += " Además, no se pudo recargar la lista de profesores.";
+                    model.Teachers = new List<User>();
+                }
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteExtracurricular(int id)
+        {
+            // 1. Verificamos la sesión y preparamos la llamada a la API
+            if (!IsSessionValid())
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+
+            // 2. Realizamos la llamada HTTP DELETE a la API. La API se encargará
+            // de la lógica para eliminar primero las inscripciones relacionadas.
+            var response = await _httpClient.DeleteAsync($"api/extracurriculars/{id}?schoolId={schoolId.Value}");
+
+            // 3. Manejamos la respuesta de la API
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Actividad eliminada con éxito.";
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                TempData["Error"] = "La actividad no fue encontrada en la API.";
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = $"Error al eliminar la actividad: {errorContent}";
+            }
+
+            return RedirectToAction(nameof(ListExtracurriculars));
         }
     }
 }

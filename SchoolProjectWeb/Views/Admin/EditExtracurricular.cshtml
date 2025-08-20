@@ -19,7 +19,7 @@
 <div class="row justify-content-center">
 	<div class="col-md-8">
 		<div class="form-box">
-			<form asp-action="EditExtracurricular" method="post" novalidate>
+			<form asp-action="EditExtracurricular" method="post">
 				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 				<input type="hidden" asp-for="ActivityID" />
@@ -67,8 +67,6 @@
 	</div>
 </div>
 
-@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-}
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

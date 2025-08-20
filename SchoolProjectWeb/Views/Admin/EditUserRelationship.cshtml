@@ -1,0 +1,61 @@
+﻿@model SchoolProjectWeb.Models.UserRelationshipViewModel
+
+@{
+    ViewData["Title"] = "Editar Relación";
+}
+
+<h2 class="main-title text-center mb-4">Editar Relación</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+}
+
+<form asp-action="EditUserRelationship" method="post" class="card shadow-sm p-4 border-0">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="RelationID" />
+
+    <div class="mb-3">
+        <label asp-for="User2ID" class="form-label fw-bold">Padre:</label>
+        <select asp-for="User2ID" class="form-select">
+            <option value="">Seleccionar Padre</option>
+            @if (Model.Parents != null)
+            {
+                foreach (var parent in Model.Parents)
+                {
+                    <option value="@parent.UserID">@parent.UserName (@parent.Email)</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="User2ID" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="User1ID" class="form-label fw-bold">Hijo:</label>
+        <select asp-for="User1ID" class="form-select">
+            <option value="">Seleccionar Hijo</option>
+            @if (Model.Children != null)
+            {
+                foreach (var child in Model.Children)
+                {
+                    <option value="@child.UserID">@child.UserName (@child.Email)</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="User1ID" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RelationshipType" class="form-label fw-bold">Tipo de Relación:</label>
+        <input asp-for="RelationshipType" class="form-control" readonly />
+        <small class="form-text text-muted">El tipo de relación no se puede editar.</small>
+        <span asp-validation-for="RelationshipType" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a asp-action="ViewChildren" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

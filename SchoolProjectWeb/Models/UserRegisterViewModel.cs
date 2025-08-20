@@ -10,7 +10,8 @@
         {
             new RoleOption { Name = "Estudiante", Id = 1 },
             new RoleOption { Name = "Profesor", Id = 2 },
-            new RoleOption { Name = "Padre", Id = 3 }
+            new RoleOption { Name = "Padre", Id = 3 },
+            new RoleOption { Name = "Enfermero", Id = 4 }
         };
     }
 

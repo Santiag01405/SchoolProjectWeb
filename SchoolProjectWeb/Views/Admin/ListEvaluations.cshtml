@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Gestión de Evaluaciones";
+    var courses = ViewData["AllCourses"] as List<SchoolProjectWeb.Models.Course> ?? new List<SchoolProjectWeb.Models.Course>();
+    var lapsos = ViewData["AllLapsos"] as List<SchoolProjectWeb.Models.Lapso> ?? new List<SchoolProjectWeb.Models.Lapso>();
 }
 
 <h1 class="main-title">Gestión de <span class="brand-name">Evaluaciones</span></h1>
@@ -9,6 +11,32 @@
 <p class="mb-4">
     <a asp-action="CreateEvaluation" class="btn btn-primary-custom">Crear Nueva Evaluación</a>
 </p>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <label for="lapsoFilter" class="form-label">Filtrar por Lapso</label>
+        <select id="lapsoFilter" class="form-select">
+            <option value="">Todos los Lapsos</option>
+            @foreach (var lapso in lapsos)
+            {
+                <option value="@lapso.LapsoID">@lapso.Nombre</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label for="courseFilter" class="form-label">Filtrar por Curso</label>
+        <select id="courseFilter" class="form-select">
+            <option value="">Todos los Cursos</option>
+            @foreach (var course in courses)
+            {
+                <option value="@course.CourseID">@course.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button id="applyFilters" class="btn btn-secondary">Aplicar Filtros</button>
+    </div>
+</div>
 
 @if (Model.Any())
 {
@@ -18,16 +46,22 @@
                 <th>Título</th>
                 <th>Descripción</th>
                 <th>Fecha</th>
+                <th>Curso</th>
+                <th>Lapso</th>
                 <th class="text-center">Acciones</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var evaluation in Model)
             {
+                var courseName = courses.FirstOrDefault(c => c.CourseID == evaluation.CourseID)?.Name ?? "N/A";
+
                 <tr>
                     <td>@evaluation.Title</td>
                     <td>@evaluation.Description</td>
                     <td>@evaluation.Date.ToShortDateString()</td>
+                    <td>@courseName</td>
+                    <td>@(evaluation.Lapso?.Nombre ?? "N/A")</td>
                     <td class="d-flex justify-content-center">
                         <a href="@Url.Action("AssignGrades", "Admin", new { evaluationId = evaluation.EvaluationID })" class="btn btn-info-custom btn-sm me-2">Asignar Calificaciones</a>
                         <a href="@Url.Action("EditEvaluation", "Admin", new { id = evaluation.EvaluationID })" class="btn btn-edit btn-sm me-2">Editar</a>
@@ -43,4 +77,29 @@
 else
 {
     <div class="alert alert-info">No se encontraron evaluaciones.</div>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('applyFilters').addEventListener('click', function() {
+            var selectedLapso = document.getElementById('lapsoFilter').value;
+            var selectedCourse = document.getElementById('courseFilter').value;
+
+            var url = '@Url.Action("ListEvaluations", "Admin")';
+            var query = [];
+
+            if (selectedLapso) {
+                query.push('lapsoId=' + selectedLapso);
+            }
+            if (selectedCourse) {
+                query.push('courseId=' + selectedCourse);
+            }
+
+            if (query.length > 0) {
+                url += '?' + query.join('&');
+            }
+
+            window.location.href = url;
+        });
+    </script>
 }

@@ -1404,8 +1404,36 @@ public async Task<IActionResult> SendNotification(NotificationSendViewModel mode
 
         //************************    EVALUACIONES    ***************************************
 
+        // AdminController.cs
+        public async Task<List<Course>> GetCoursesFromApi()
+        {
+            var token = GetTokenFromSession();
+            var schoolId = GetSchoolIdFromSession();
+
+            if (string.IsNullOrEmpty(token) || !schoolId.HasValue)
+            {
+                return new List<Course>();
+            }
+
+            SetAuthorizationHeader(token);
+            var response = await _httpClient.GetAsync($"api/courses?schoolId={schoolId.Value}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var courses = JsonSerializer.Deserialize<List<Course>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return courses;
+            }
+            else
+            {
+                // En caso de error, devuelve una lista vacía para no romper la vista.
+                return new List<Course>();
+            }
+        }
+        // AdminController.cs
+        // AdminController.cs
         [HttpGet]
-        public async Task<IActionResult> ListEvaluations()
+        public async Task<IActionResult> ListEvaluations(int? lapsoId, int? courseId)
         {
             var token = GetTokenFromSession();
             var schoolId = GetSchoolIdFromSession();
@@ -1417,19 +1445,69 @@ public async Task<IActionResult> SendNotification(NotificationSendViewModel mode
             }
 
             SetAuthorizationHeader(token);
-            var response = await _httpClient.GetAsync($"api/evaluations?userID={userId.Value}&schoolId={schoolId.Value}");
+
+            // ✅ AÑADIDO: Construir la URL de la API con los filtros
+            var apiUrl = new StringBuilder("api/evaluations?");
+            apiUrl.Append($"userID={userId.Value}&schoolId={schoolId.Value}");
+            if (lapsoId.HasValue)
+            {
+                apiUrl.Append($"&lapsoId={lapsoId.Value}");
+            }
+            if (courseId.HasValue)
+            {
+                apiUrl.Append($"&courseId={courseId.Value}");
+            }
+
+            var response = await _httpClient.GetAsync(apiUrl.ToString());
 
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var evaluations = JsonSerializer.Deserialize<List<Evaluation>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                // ✅ OBTENER TODOS LOS CURSOS Y LAPSOS PARA LOS FILTROS
+                var allCourses = await GetCoursesFromApi(); // Método que ya creaste
+                var allLapsos = await GetLapsosFromApi(); // Método nuevo
+
+                ViewData["AllCourses"] = allCourses;
+                ViewData["AllLapsos"] = allLapsos;
+
                 return View(evaluations);
             }
             else
             {
+                ViewData["AllCourses"] = new List<Course>();
+                ViewData["AllLapsos"] = new List<Lapso>();
                 return View(new List<Evaluation>());
             }
         }
+
+        // ✅ Nuevo método para obtener todos los lapsos
+        public async Task<List<Lapso>> GetLapsosFromApi()
+        {
+            var token = GetTokenFromSession();
+            var schoolId = GetSchoolIdFromSession();
+
+            if (string.IsNullOrEmpty(token) || !schoolId.HasValue)
+            {
+                return new List<Lapso>();
+            }
+
+            SetAuthorizationHeader(token);
+            var response = await _httpClient.GetAsync($"api/lapsos?schoolId={schoolId.Value}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var lapsos = JsonSerializer.Deserialize<List<Lapso>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return lapsos;
+            }
+            else
+            {
+                return new List<Lapso>();
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> CreateEvaluation()
@@ -2002,6 +2080,152 @@ public async Task<IActionResult> SendNotification(NotificationSendViewModel mode
             }
 
             return RedirectToAction(nameof(ListExtracurriculars));
+        }
+
+        // ----------------------------------------------------------------------
+        // VISTAS DE LAPSOS
+        // ----------------------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> Lapsos()
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+            var response = await _httpClient.GetAsync($"api/lapsos?schoolId={schoolId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var lapsos = JsonSerializer.Deserialize<List<Lapso>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return View(lapsos);
+            }
+
+            TempData["Error"] = "Error al obtener los lapsos.";
+            return View(new List<Lapso>());
+        }
+
+        [HttpGet]
+        public IActionResult CreateLapso()
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateLapso(Lapso model)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var schoolId = GetSchoolIdFromSession();
+
+            var payload = new
+            {
+                nombre = model.Nombre,
+                fechaInicio = model.FechaInicio,
+                fechaFin = model.FechaFin,
+                schoolID = schoolId
+            };
+
+            var json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("api/lapsos", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Lapso creado exitosamente.";
+                return RedirectToAction("Lapsos");
+            }
+
+            var errorJson = await response.Content.ReadAsStringAsync();
+            TempData["Error"] = $"Error al crear el lapso: {errorJson}";
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditLapso(int id)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var response = await _httpClient.GetAsync($"api/lapsos/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var lapso = JsonSerializer.Deserialize<Lapso>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return View(lapso);
+            }
+
+            TempData["Error"] = "Lapso no encontrado.";
+            return RedirectToAction("Lapsos");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditLapso(int id, Lapso model)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            if (id != model.LapsoID)
+            {
+                return BadRequest("El ID de la ruta no coincide con el ID del lapso.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            SetAuthorizationHeader(GetTokenFromSession());
+
+            // ✅ Se agrega schoolId al payload para que coincida con la firma del endpoint de la API
+            var schoolId = GetSchoolIdFromSession();
+            model.SchoolID = schoolId.Value;
+
+            var json = JsonSerializer.Serialize(model);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // ✅ CORRECCIÓN: Se añade el parámetro de consulta 'schoolId' a la URL
+            var response = await _httpClient.PutAsync($"api/lapsos/{id}?schoolId={schoolId}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Lapso actualizado exitosamente.";
+                return RedirectToAction("Lapsos");
+            }
+
+            var errorJson = await response.Content.ReadAsStringAsync();
+            TempData["Error"] = $"Error al actualizar el lapso: {errorJson}";
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteLapso(int id)
+        {
+            if (!IsSessionValid()) return RedirectToAction("Login", "Login");
+
+            SetAuthorizationHeader(GetTokenFromSession());
+            var response = await _httpClient.DeleteAsync($"api/lapsos/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Lapso eliminado exitosamente.";
+            }
+            else
+            {
+                var errorJson = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = $"Error al eliminar el lapso: {errorJson}";
+            }
+
+            return RedirectToAction("Lapsos");
         }
     }
 }

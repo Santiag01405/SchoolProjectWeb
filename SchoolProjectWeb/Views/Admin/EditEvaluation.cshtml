@@ -1,74 +1,52 @@
-﻿@model SchoolProjectWeb.Models.ExtracurricularEditViewModel
+﻿@model SchoolProjectWeb.Models.EvaluationViewModel
 
 @{
-	ViewData["Title"] = "Editar Actividad";
+    ViewData["Title"] = "Editar Evaluación";
 }
 
-<h2 class="main-title text-center mb-4">Editar <span class="brand-name">Actividad</span> Extracurricular</h2>
-<hr />
-
-@if (TempData["Success"] != null)
-{
-	<div class="alert alert-success">@TempData["Success"]</div>
-}
-@if (TempData["Error"] != null)
-{
-	<div class="alert alert-danger">@TempData["Error"]</div>
-}
-
+<h1 class="main-title">Editar <span class="brand-name">Evaluación</span></h1>
 <div class="row justify-content-center">
-	<div class="col-md-8">
-		<div class="form-box">
-			<form asp-action="EditExtracurricular" method="post" novalidate>
-				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-6">
+        <div class="form-box">
+            <form asp-action="EditEvaluation">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-				<input type="hidden" asp-for="ActivityID" />
-				<input type="hidden" asp-for="SchoolID" />
+                <input type="hidden" asp-for="EvaluationID" />
 
-				<div class="mb-3">
-					<label asp-for="Name" class="form-label fw-bold">Nombre:</label>
-					<input asp-for="Name" class="form-control" />
-					<span asp-validation-for="Name" class="text-danger"></span>
-				</div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3">
+                    <label asp-for="Description" class="control-label"></label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3">
+                    <label asp-for="Date" class="control-label"></label>
+                    <input asp-for="Date" type="date" class="form-control" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3">
+                    <label asp-for="CourseID" class="control-label">Curso</label>
+                    <select asp-for="CourseID" class="form-control" asp-items="@(new SelectList(ViewBag.Courses, "CourseID", "Name"))">
+                        <option value="">-- Seleccione un Curso --</option>
+                    </select>
+                    <span asp-validation-for="CourseID" class="text-danger"></span>
+                </div>
 
-				<div class="mb-3">
-					<label asp-for="Description" class="form-label fw-bold">Descripción:</label>
-					<textarea asp-for="Description" class="form-control" rows="3"></textarea>
-					<span asp-validation-for="Description" class="text-danger"></span>
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="DayOfWeek" class="form-label fw-bold">Día de la semana:</label>
-					<select asp-for="DayOfWeek" class="form-select">
-						<option value="">-- Seleccione un día --</option>
-						<option value="1">Lunes</option>
-						<option value="2">Martes</option>
-						<option value="3">Miércoles</option>
-						<option value="4">Jueves</option>
-						<option value="5">Viernes</option>
-					</select>
-					<span asp-validation-for="DayOfWeek" class="text-danger"></span>
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="UserID" class="form-label fw-bold">Profesor asignado:</label>
-					<select asp-for="UserID" class="form-select" asp-items="@(new SelectList(Model.Teachers, "UserID", "UserName"))">
-						<option value="">-- No asignar --</option>
-					</select>
-					<span asp-validation-for="UserID" class="text-danger"></span>
-				</div>
-
-				<div class="text-center mt-4">
-					<button type="submit" class="btn btn-primary-custom">Guardar Cambios</button>
-					<a asp-action="ListExtracurriculars" class="btn btn-secondary-custom ms-2">Volver a la lista</a>
-				</div>
-			</form>
-		</div>
-	</div>
+                <div class="form-group mt-4 text-center">
+                    <button type="submit" class="btn btn-primary-custom">Guardar Cambios</button>
+                    <a asp-action="ListEvaluations" class="btn btn-secondary-custom ms-2">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

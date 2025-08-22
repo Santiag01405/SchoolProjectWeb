@@ -76,6 +76,16 @@
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
+                                Lapsos <i class="fa fa-caret-down caret-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu" style="background-color: #0C4251;">
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="Lapsos">Ver lapsos</a></li>
+                                <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateLapso">Manejar lapsos</a></li>
+                            </ul>
+                        </li>
+
+                          <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" style="color: #f1c864;" href="#" role="button" data-bs-toggle="dropdown">
                                 Evaluaciones <i class="fa fa-caret-down caret-icon"></i>
                             </a>
                             <ul class="dropdown-menu" style="background-color: #0C4251;">
@@ -83,6 +93,7 @@
                                 <li><a class="dropdown-item" style="color: #6bbdda;" asp-controller="Admin" asp-action="CreateEvaluation">Crear Evaluación</a></li>
                             </ul>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link" style="color: #f1c864;" asp-controller="Admin" asp-action="ListStudents">Inscripciones</a>
                         </li>

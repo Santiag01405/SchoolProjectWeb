@@ -18,5 +18,8 @@ namespace SchoolProjectWeb.Models
         public int CourseID { get; set; }
 
         public int EvaluationID { get; set; }
+
+        [Required(ErrorMessage = "El lapso es obligatorio.")]
+        public int LapsoID { get; set; }
     }
 }

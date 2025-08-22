@@ -1,0 +1,34 @@
+﻿@model SchoolProjectWeb.Models.Lapso
+
+@{
+    ViewData["Title"] = "Crear Lapso";
+}
+
+<h1 class="main-title">Crear <span class="brand-name">Nuevo Lapso</span></h1>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6 form-box card-zoom4">
+        <form asp-action="CreateLapso">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="FechaInicio" class="control-label"></label>
+                <input asp-for="FechaInicio" class="form-control" type="date" />
+                <span asp-validation-for="FechaInicio" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="FechaFin" class="control-label"></label>
+                <input asp-for="FechaFin" class="form-control" type="date" />
+                <span asp-validation-for="FechaFin" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4 d-flex justify-content-between">
+                <a asp-action="Lapsos" class="btn btn-secondary">Cancelar</a>
+                <input type="submit" value="Crear" class="btn btn-primary-custom" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -10,5 +10,7 @@
         public int UserID { get; set; }
         public int SchoolID { get; set; }
         public int? ClassroomID { get; set; }
+        public int LapsoID { get; set; }
+        public Lapso Lapso { get; set; }
     }
 }

@@ -477,4 +477,11 @@ a.nav-link:hover {
 
 
 
+/* Espacio extra al final del menú offcanvas para evitar la barra de Somee */
+.offcanvas-body {
+    padding-bottom: 5.4rem; /* Puedes ajustar este valor si necesitas más o menos espacio */
+}
+
+
+
 
